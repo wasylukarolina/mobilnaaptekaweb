@@ -85,14 +85,15 @@
     flex-direction: row; /* Ustawiamy kierunek flex na wiersz */
     justify-content: center; /* Wyśrodkowujemy w poziomie */
     gap: 30px;
-    margin: 60px auto;
+    margin: 10px;
 }
-
 
 .submit{
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 20px;
+    margin-bottom: -40px;
     width: 220px;
     height: 59px;
     color: white;

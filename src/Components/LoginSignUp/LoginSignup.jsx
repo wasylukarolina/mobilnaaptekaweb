@@ -96,8 +96,16 @@ const LoginSignup = () => {
         <div className='container'>
             <div className="header">
                 <div className="text">{isLoggedIn ? "Zalogowano" : action}</div>
+
                 <div className="underline"></div>
+
+                <div className="submit-container">
+                    <div className={action === "Logowanie" ? "submit gray" : "submit"} onClick={() => { setAction("Rejestracja") }}>Rejestracja</div>
+                    <div className={action === "Rejestracja" ? "submit gray" : "submit"} onClick={() => { setAction("Logowanie") }}>Logowanie</div>
+                </div>
             </div>
+
+
             <div className="inputs">
                 {action === "Logowanie" ? <div></div> : <div className="input">
                     <img src={person_icon} alt="" />
@@ -122,10 +130,7 @@ const LoginSignup = () => {
                     </div>}
                     <button className="confirm-button" onClick={isLoggedIn ? null : (action === "Rejestracja" ? handleRegister : handleLogin)}>Potwierdź</button>
 
-                    <div className="submit-container">
-                        <div className={action === "Logowanie" ? "submit gray" : "submit"} onClick={() => { setAction("Rejestracja") }}>Rejestracja</div>
-                        <div className={action === "Rejestracja" ? "submit gray" : "submit"} onClick={() => { setAction("Logowanie") }}>Logowanie</div>
-                    </div>
+
 
                 </div>
             )}
