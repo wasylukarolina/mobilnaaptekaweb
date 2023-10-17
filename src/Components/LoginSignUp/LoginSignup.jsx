@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import MainView from "./MainView";
 import { getDatabase, ref, set } from 'firebase/database';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { sendPasswordResetEmail } from "firebase/auth";
 
 
 
@@ -79,6 +80,18 @@ const LoginSignup = () => {
             console.error(error);
         }
     };
+
+    const handleResetPassword = () => {
+        // Wysłanie e-maila z linkiem do resetowania hasła na adres powiązany z kontem
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                console.log("E-mail z linkiem do resetowania hasła został wysłany.");
+            })
+            .catch((error) => {
+                console.error("Błąd podczas wysyłania e-maila z linkiem do resetowania hasła:", error);
+            });
+    };
+
     return (
         <div className='container'>
             <div className="header">
@@ -104,7 +117,9 @@ const LoginSignup = () => {
             {isLoggedIn ? null : (
                 <div>
 
-                    {action === "Rejestracja" ? <div></div> : <div className="forgot-password">Zapomniałeś hasła? <span>Kliknij</span></div>}
+                    {action === "Rejestracja" ? <div></div> : <div className="forgot-password" onClick={handleResetPassword}>
+                        Zapomniałeś hasła? Wpisz swój mail w formularz i <span>Kliknij</span>
+                    </div>}
                     <button className="confirm-button" onClick={isLoggedIn ? null : (action === "Rejestracja" ? handleRegister : handleLogin)}>Potwierdź</button>
 
                     <div className="submit-container">
