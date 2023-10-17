@@ -3,15 +3,17 @@ import './LoginSignup.css';
 import email_icon from '../Assets/email.png';
 import pass_icon from '../Assets/pass.png';
 import person_icon from '../Assets/person.png';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
+//import { useNavigate } from 'react-router-dom';
+
 
 const LoginSignup = () => {
 
     const [action, setAction] = useState("Rejestracja");
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState(""); // Dodaj stan dla pola hasła
+
 
     const isValidEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,6 +43,28 @@ const LoginSignup = () => {
         } catch (error) {
             console.error(error);
             // Dodaj kod obsługi błędu, np. wyświetlenie komunikatu o błędzie
+        }
+    };
+
+    //const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        if (!isValidEmail(email)) {
+            console.error("Nieprawidłowy adres e-mail");
+            return;
+        }
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log(userCredential);
+
+            // Przekieruj użytkownika po zalogowaniu na widok "Main"
+            //navigate("/main");
+
+            console.log("Zalogowano pomyślnie!");
+        } catch (error) {
+            console.error(error);
         }
     };
 
