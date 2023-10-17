@@ -1,28 +1,33 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { auth } from "../../firebaseConfig";
 
 const MainView = () => {
     const navigate = useNavigate();
+    const [nickname, setNickname] = useState("");
 
     useEffect(() => {
-        const handleBlockedNavigation = (e) => {
-            if (e.state && e.state.prevPathname === "/") {
-                e.preventDefault();
-                navigate("/mainview");
-            }
-        };
+        const userId = auth.currentUser.uid;
+        const db = getFirestore(auth.app);
 
-        const blockPopstate = () => {
-            window.history.pushState({ prevPathname: "/" }, "");
-            window.addEventListener("popstate", handleBlockedNavigation);
-        };
+        // Utwórz zapytanie do bazy danych Firestore, aby pobrać dokument z kolekcji "users"
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("userId", "==", userId));
 
-        blockPopstate();
-
-        return () => {
-            window.removeEventListener("popstate", handleBlockedNavigation);
-        };
-    }, [navigate]);
+        // Pobierz dokumenty pasujące do zapytania
+        getDocs(q)
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    // Pobierz nickname z dokumentu
+                    const userData = doc.data();
+                    setNickname(userData.nickname);
+                });
+            })
+            .catch((error) => {
+                console.error("Błąd podczas pobierania danych z Firestore:", error);
+            });
+    }, []);
 
     const handleLogout = () => {
         navigate("/");
@@ -30,9 +35,12 @@ const MainView = () => {
 
     return (
         <div>
-            <h1>Widok "Main"</h1>
-            {/* Dodaj treść widoku "Main" */}
+
             <button onClick={handleLogout}>Wyloguj</button>
+
+            <h1>
+            {nickname && <p>Witaj, {nickname}!</p>} </h1>
+
         </div>
     );
 };

@@ -8,6 +8,8 @@ import { auth, app } from "../../firebaseConfig";
 import { useNavigate } from 'react-router-dom';
 import MainView from "./MainView";
 import { getDatabase, ref, set } from 'firebase/database';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+
 
 
 
@@ -38,19 +40,24 @@ const LoginSignup = () => {
             // Uzyskaj userId użytkownika
             const userId = user.uid;
 
-            // Dodaj dane do tabeli w bazie danych
-            const db = getDatabase(app); // Inicjuj dostęp do bazy danych z użyciem 'app'
-            const dbRef = ref(db, 'nicknames/' + userId); // Zaktualizowaliśmy nazwę tabeli na 'nicknames'
+            // Dodaj dane do kolekcji "users" w Firestore
+            const db = getFirestore(app); // Inicjuj dostęp do Firestore z użyciem 'app'
+            const usersCollection = collection(db, 'users'); // Kolekcja "users"
+
             const userData = {
-                nickname: nickname, // Pobierz nick z pola formularza
+                userId: userId,
+                nickname: nickname,
+                email: email,
                 // Dodaj inne dane, które chcesz przekazać
             };
 
-            set(dbRef, userData);
+            // Dodaj dokument do kolekcji "users"
+            await addDoc(usersCollection, userData);
 
             setAction("Logowanie");
             setEmail("");
             setPassword("");
+            setNickname("");
         } catch (error) {
             console.error(error);
         }
@@ -96,12 +103,15 @@ const LoginSignup = () => {
 
             {isLoggedIn ? null : (
                 <div>
+
                     {action === "Rejestracja" ? <div></div> : <div className="forgot-password">Zapomniałeś hasła? <span>Kliknij</span></div>}
+                    <button className="confirm-button" onClick={isLoggedIn ? null : (action === "Rejestracja" ? handleRegister : handleLogin)}>Potwierdź</button>
+
                     <div className="submit-container">
                         <div className={action === "Logowanie" ? "submit gray" : "submit"} onClick={() => { setAction("Rejestracja") }}>Rejestracja</div>
                         <div className={action === "Rejestracja" ? "submit gray" : "submit"} onClick={() => { setAction("Logowanie") }}>Logowanie</div>
                     </div>
-                    <button className="confirm-button" onClick={isLoggedIn ? null : (action === "Rejestracja" ? handleRegister : handleLogin)}>Potwierdź</button>
+
                 </div>
             )}
         </div>
