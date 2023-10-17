@@ -80,11 +80,14 @@
     cursor: pointer;
 }
 
-.submit-container{
+.submit-container {
     display: flex;
+    flex-direction: row; /* Ustawiamy kierunek flex na wiersz */
+    justify-content: center; /* Wyśrodkowujemy w poziomie */
     gap: 30px;
     margin: 60px auto;
 }
+
 
 .submit{
     display: flex;
