@@ -6,15 +6,9 @@ import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import moment from "moment";
-import './CalendarStyles.css'; // Importuj plik ze stylami kalendarza
 
 
-
-
-const MainView = () => {
+const Health = () => {
     const navigate = useNavigate();
     const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -52,33 +46,7 @@ const MainView = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
-    const localizer = momentLocalizer(moment);
 
-    const events = [
-        {
-            title: 'Spotkanie z lekarzem',
-            start: new Date(2023, 10, 20, 10, 0),
-            end: new Date(2023, 10, 20, 11, 0),
-        },
-        {
-            title: 'Badanie krwi',
-            start: new Date(2023, 10, 25, 14, 0),
-            end: new Date(2023, 10, 25, 15, 0),
-        },
-        // Dodaj inne wydarzenia
-    ];
-
-    const MyCalendar = () => {
-        return (
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500 }} // Dostosuj wysokość kalendarza do swoich potrzeb
-            />
-        );
-    };
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
@@ -99,13 +67,12 @@ const MainView = () => {
 
             <div className="content">
                 <h1>
-                    {nickname && <p>Witaj, {nickname}!</p>}
+                    Stan zdrowia
                 </h1>
-                <MyCalendar />
             </div>
 
         </div>
     );
 };
 
-export default MainView;
+export default Health;
