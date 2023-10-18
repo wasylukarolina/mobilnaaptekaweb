@@ -2,24 +2,23 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
+import "./MainView.css";
 
 const MainView = () => {
     const navigate = useNavigate();
     const [nickname, setNickname] = useState("");
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
         const db = getFirestore(auth.app);
 
-        // Utwórz zapytanie do bazy danych Firestore, aby pobrać dokument z kolekcji "users"
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("userId", "==", userId));
 
-        // Pobierz dokumenty pasujące do zapytania
         getDocs(q)
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                    // Pobierz nickname z dokumentu
                     const userData = doc.data();
                     setNickname(userData.nickname);
                 });
@@ -33,14 +32,34 @@ const MainView = () => {
         navigate("/");
     };
 
+    const toggleSidebar = () => {
+        setSidebarOpen(!isSidebarOpen);
+    };
+
     return (
-        <div>
+        <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
+            <button className="sidebar-toggle" onClick={toggleSidebar}>
+                {isSidebarOpen ? "Zamknij panel" : "Otwórz panel"}
+            </button>
 
-            <button onClick={handleLogout}>Wyloguj</button>
+            <div className="sidebar">
+                <h2>Panel boczny</h2>
+                <ul>
+                    <li>Opcja 1</li>
+                    <li>Opcja 2</li>
+                    <li>Opcja 3</li>
+                    <li>
+                        {/* Przenieś przycisk "Wyloguj" na dół panelu bocznego */}
+                        <button onClick={handleLogout}>Wyloguj</button>
+                    </li>
+                </ul>
+            </div>
 
-            <h1>
-            {nickname && <p>Witaj, {nickname}!</p>} </h1>
-
+            <div className="content">
+                <h1>
+                    {nickname && <p>Witaj, {nickname}!</p>}
+                </h1>
+            </div>
         </div>
     );
 };

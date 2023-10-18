@@ -1,0 +1,47 @@
+/* MainView.css */
+
+body {
+    background: white;
+}
+
+
+.main-view {
+    display: flex;
+    align-items: stretch;
+    transition: margin-left 0.5s;
+    background-color: white;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 2;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    background: linear-gradient(#356F90, #AD4027);
+    transition: 0.5s;
+    overflow-x: hidden;
+    padding-top: 60px;
+    color: black;
+}
+
+.main-view.sidebar-open {
+    margin-left: 250px;
+}
+
+.sidebar-open .sidebar {
+    left: 0;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+}
