@@ -55,6 +55,7 @@ const Health = () => {
                     <h2>MENU</h2>
                     <Link to="/mainview">STRONA GŁÓWNA</Link>
                     <Link to="/newdrug">DODAJ LEK</Link>
+                    <Link to="/mydrugs">MOJE LEKI</Link>
                     <Link to="/health">STAN ZDROWIA</Link>
                     <Link to="/updatehealth">AKTUALIZUJ STAN ZDROWIA</Link>
                     <button className="logout-button" onClick={handleLogout}>Wyloguj</button>
