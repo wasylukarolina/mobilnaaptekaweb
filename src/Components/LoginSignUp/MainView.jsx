@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import "./MainView.css";
+import menu_icon from '../Assets/menu.png';
+
 
 const MainView = () => {
     const navigate = useNavigate();
@@ -38,10 +40,6 @@ const MainView = () => {
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
-            <button className="sidebar-toggle" onClick={toggleSidebar}>
-                {isSidebarOpen ? "Zamknij panel" : "Otwórz panel"}
-            </button>
-
             <div className="sidebar">
                 <h2>Panel boczny</h2>
                 <ul>
@@ -49,11 +47,14 @@ const MainView = () => {
                     <li>Opcja 2</li>
                     <li>Opcja 3</li>
                     <li>
-                        {/* Przenieś przycisk "Wyloguj" na dół panelu bocznego */}
                         <button onClick={handleLogout}>Wyloguj</button>
                     </li>
                 </ul>
             </div>
+
+            <button className={`sidebar-toggle ${isSidebarOpen ? "right" : "left"}`} onClick={toggleSidebar}>
+                <img src={menu_icon} alt="" />
+            </button>
 
             <div className="content">
                 <h1>

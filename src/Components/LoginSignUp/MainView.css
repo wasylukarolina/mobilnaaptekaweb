@@ -4,19 +4,34 @@ body {
     background: white;
 }
 
+img {
+    margin: 0px 0px;
+    width: 40px;
+    height: 40px;
+}
 
 .main-view {
     display: flex;
     align-items: stretch;
     transition: margin-left 0.5s;
-    background-color: white;
 }
 
 .sidebar-toggle {
     position: absolute;
-    left: 10px;
     top: 10px;
     z-index: 2;
+    transition: left 0.5s; /* Dodaj przejście dla przycisku */
+    background: none; /* Usuń tło */
+    border: none; /* Usuń obramowanie */
+    padding: 0; /* Usuń wewnętrzny odstęp */
+}
+
+.sidebar-toggle.left {
+    left: 0px;
+}
+
+.sidebar-toggle.right {
+    left: 250px;
 }
 
 .sidebar {
@@ -29,7 +44,7 @@ body {
     transition: 0.5s;
     overflow-x: hidden;
     padding-top: 60px;
-    color: black;
+    color: white;
 }
 
 .main-view.sidebar-open {
