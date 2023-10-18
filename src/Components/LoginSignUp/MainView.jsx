@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
+import { Link } from "react-router-dom"; // Dodajemy import Link
 import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
-
+import NewDrug from "./NewDrug";
 
 const MainView = () => {
     const navigate = useNavigate();
@@ -41,14 +42,11 @@ const MainView = () => {
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
             <div className="sidebar">
-                <h2>Panel boczny</h2>
-                <ul>
-                    <li>Opcja 1</li>
-                    <li>Opcja 2</li>
-                    <li>Opcja 3</li>
-                </ul>
-
-                <button className="logout-button" onClick={handleLogout}>Wyloguj< /button>
+                <div className="centered-content">
+                    <h2>MENU</h2>
+                    <Link to="/newdrug">DODAJ LEK</Link>
+                    <button className="logout-button" onClick={handleLogout}>Wyloguj</button>
+                </div>
             </div>
 
             <button className={`sidebar-toggle ${isSidebarOpen ? "right" : "left"}`} onClick={toggleSidebar}>

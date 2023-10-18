@@ -12,8 +12,6 @@ import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { sendPasswordResetEmail } from "firebase/auth";
 
 
-
-
 const LoginSignup = () => {
     const [action, setAction] = useState("Rejestracja");
     const [email, setEmail] = useState("");
@@ -139,3 +137,5 @@ const LoginSignup = () => {
 }
 
 export default LoginSignup;
+
+document.body.classList.add('login-signup');

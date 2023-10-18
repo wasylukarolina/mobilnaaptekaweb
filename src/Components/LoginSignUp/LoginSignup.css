@@ -1,6 +1,8 @@
-body {
-    background: linear-gradient(#356F90, #AD4027);
+/* Ustaw tło strony na gradientowe w widoku LoginSignup */
+body.login-signup {
+    background: linear-gradient(#356F90, #AD4027); /* Gradientowe tło strony */
 }
+
 
 .container{
     margin: auto;

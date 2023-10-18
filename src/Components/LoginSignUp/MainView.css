@@ -1,8 +1,11 @@
 /* MainView.css */
+/* MainView.css */
 
-body {
+.main-view {
     background: white;
+    height: 100vh; /* Wysokość na 100% wysokości widoku (viewport height) */
 }
+
 
 img {
     margin: 0px 0px;
@@ -43,9 +46,29 @@ img {
     background: linear-gradient(#356F90, #AD4027);
     transition: 0.5s;
     overflow-x: hidden;
-    padding-top: 60px;
+    padding-top: 20px;
     color: white;
 }
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Wyśrodkowanie w pionie */
+    justify-content: center; /* Wyśrodkowanie w poziomie */
+    height: 100%; /* Rozciągnięcie zawartości na całą wysokość sidebaru */
+}
+
+.centered-content h2 {
+    font-size: 24px;
+    margin-top: 80px;
+}
+
+.centered-content a {
+    font-size: 18px;
+    text-decoration: none;
+    color: white;
+}
+
 
 .logout-button {
     display: flex;
