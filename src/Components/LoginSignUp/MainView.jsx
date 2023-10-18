@@ -46,10 +46,9 @@ const MainView = () => {
                     <li>Opcja 1</li>
                     <li>Opcja 2</li>
                     <li>Opcja 3</li>
-                    <li>
-                        <button onClick={handleLogout}>Wyloguj</button>
-                    </li>
                 </ul>
+
+                <button className="logout-button" onClick={handleLogout}>Wyloguj< /button>
             </div>
 
             <button className={`sidebar-toggle ${isSidebarOpen ? "right" : "left"}`} onClick={toggleSidebar}>
