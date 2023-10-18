@@ -1,0 +1,48 @@
+/* Przykładowe style kalendarza */
+.rbc-calendar {
+    font-family: 'Arial', sans-serif;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.rbc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.rbc-toolbar button {
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.rbc-toolbar button:hover {
+    text-decoration: underline;
+}
+
+.rbc-event {
+    background-color: #007BFF;
+    color: white;
+    border: 1px solid #007BFF;
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+
+.rbc-event:hover {
+    background-color: #0056b3;
+    border: 1px solid #0056b3;
+}
+
+.rbc-slot-selection {
+    background-color: rgba(0, 123, 255, 0.1);
+    border: 1px solid #007BFF;
+    border-radius: 3px;
+}
