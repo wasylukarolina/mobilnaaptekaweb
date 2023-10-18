@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
-import { Link } from "react-router-dom"; // Dodajemy import Link
+import { signOut } from 'firebase/auth';
+import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
-import NewDrug from "./NewDrug";
 
 const MainView = () => {
     const navigate = useNavigate();
@@ -31,8 +31,14 @@ const MainView = () => {
             });
     }, []);
 
-    const handleLogout = () => {
-        navigate("/");
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            // Po wylogowaniu przekieruj użytkownika na stronę logowania
+            navigate('/');
+        } catch (error) {
+            console.error('Błąd podczas wylogowywania:', error);
+        }
     };
 
     const toggleSidebar = () => {
