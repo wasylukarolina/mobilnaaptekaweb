@@ -6,19 +6,18 @@ import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
-
-
-
+import productData from '../Assets/Rejestr_Produktow_Leczniczych_calosciowy_stan_na_dzien_20230511.xml';
 
 const NewDrug = () => {
     const navigate = useNavigate();
     const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [productNames, setProductNames] = useState([]);
+    const [filterText, setFilterText] = useState("");
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
         const db = getFirestore(auth.app);
-
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("userId", "==", userId));
 
@@ -32,12 +31,28 @@ const NewDrug = () => {
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
             });
+
+        fetch(productData)
+            .then((response) => response.text())
+            .then((xmlText) => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+                const productNodes = xmlDoc.querySelectorAll("produktLeczniczy");
+                const names = Array.from(productNodes).map((productNode) => {
+                    return productNode.getAttribute("nazwaProduktu");
+                });
+
+                setProductNames(names);
+            })
+            .catch((error) => {
+                console.error("Błąd podczas pobierania pliku XML:", error);
+            });
     }, []);
 
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            // Po wylogowaniu przekieruj użytkownika na stronę logowania
             navigate('/');
         } catch (error) {
             console.error('Błąd podczas wylogowywania:', error);
@@ -47,8 +62,6 @@ const NewDrug = () => {
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
-
-
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
@@ -69,11 +82,27 @@ const NewDrug = () => {
             </button>
 
             <div className="content">
-                <h1>
-                    Dodaj lek
-                </h1>
+                <h1>Dodaj lek</h1>
+                <h2>Wyszukaj lub wybierz lek:</h2>
+                <input
+                    type="text"
+                    placeholder="Wyszukaj lek"
+                    value={filterText}
+                    onChange={(e) => setFilterText(e.target.value)}
+                />
+                <select value={filterText} onChange={(e) => setFilterText(e.target.value)}>
+                    <option value="">Wybierz lek</option>
+                    {productNames
+                        .filter((productName) =>
+                            productName.toLowerCase().includes(filterText.toLowerCase())
+                        )
+                        .map((productName, index) => (
+                            <option key={index} value={productName}>
+                                {productName}
+                            </option>
+                        ))}
+                </select>
             </div>
-
         </div>
     );
 };
