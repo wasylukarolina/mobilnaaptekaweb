@@ -9,12 +9,13 @@
 .rbc-toolbar {
     display: flex;
     justify-content: space-between;
-    background-color: #333;
+    background: linear-gradient(to right, #356F90, #AD4027); /* Twój gradient */
     color: white;
     padding: 10px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
+
 
 .rbc-toolbar button {
     background-color: transparent;
@@ -29,20 +30,20 @@
 }
 
 .rbc-event {
-    background-color: #007BFF;
+    background-color: #356F90;
     color: white;
-    border: 1px solid #007BFF;
+    border: 1px solid #356F90;
     border-radius: 5px;
     padding: 2px 5px;
 }
 
 .rbc-event:hover {
-    background-color: #0056b3;
-    border: 1px solid #0056b3;
+    background-color: #AD4027;
+    border: 1px solid #AD4027;
 }
 
 .rbc-slot-selection {
-    background-color: rgba(0, 123, 255, 0.1);
-    border: 1px solid #007BFF;
+    background-color: #AD4027;
+    border: 1px solid #AD4027;
     border-radius: 3px;
 }
