@@ -43,15 +43,20 @@ const NewDrug = () => {
                 const xmlDoc = parser.parseFromString(xmlText, "text/xml");
 
                 const productNodes = xmlDoc.querySelectorAll("produktLeczniczy");
-                const names = Array.from(productNodes).map((productNode) => {
-                    return productNode.getAttribute("nazwaProduktu");
+                const productInfo = Array.from(productNodes).map((productNode) => {
+                    const productName = productNode.getAttribute("nazwaProduktu");
+                    const moc = productNode.getAttribute("moc");
+                    const combinedName = `${productName} ${moc}`;
+                    return combinedName;
                 });
 
-                setProductNames(names);
+                setProductNames(productInfo);
             })
             .catch((error) => {
                 console.error("Błąd podczas pobierania pliku XML:", error);
             });
+
+
     }, []);
 
     const handleLogout = async () => {
@@ -113,14 +118,15 @@ const NewDrug = () => {
                 <div className="product-list">
                     {filteredProductNames.length > 0 && (
                         <select multiple value={selectedProducts} onChange={handleProductSelect}>
-                            {filteredProductNames.map((productName, index) => (
-                                <option key={index} value={productName}>
-                                    {productName}
+                            {filteredProductNames.map((productInfo, index) => (
+                                <option key={index} value={productInfo}>
+                                    {productInfo}
                                 </option>
                             ))}
                         </select>
                     )}
                 </div>
+
                 {selectedProductNames.length > 0 && (
                     <div className="selected-products">
                         <h3>Wybrane leki:</h3>
