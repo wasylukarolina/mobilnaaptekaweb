@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
 import productData from '../Assets/Rejestr_Produktow_Leczniczych_calosciowy_stan_na_dzien_20230511.xml';
+import './NewDrug.css';
 
 const NewDrug = () => {
     const navigate = useNavigate();
@@ -110,6 +111,9 @@ const NewDrug = () => {
                 <h1>Dodaj lek</h1>
                 <h2>Wyszukaj lub wybierz lek:</h2>
                 <input
+                    style={{
+                        width: '493px',  // Stała szerokość
+                    }}
                     type="text"
                     placeholder="Wyszukaj lek"
                     value={filterText}
@@ -117,7 +121,11 @@ const NewDrug = () => {
                 />
                 <div className="product-list">
                     {filteredProductNames.length > 0 && (
-                        <select multiple value={selectedProducts} onChange={handleProductSelect}>
+                        <select
+                            style={{
+                                width: '500px',  // Stała szerokość
+                            }}
+                            multiple value={selectedProducts} onChange={handleProductSelect}>
                             {filteredProductNames.map((productInfo, index) => (
                                 <option key={index} value={productInfo}>
                                     {productInfo}

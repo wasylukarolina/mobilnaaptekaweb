@@ -1,0 +1,8 @@
+/* NewDrug.css */
+.input-container input {
+    width: 500px; /* Ustaw stałą szerokość */
+    height: 30px; /* Ustaw wysokość */
+    padding: 5px; /* Dodaj wewnętrzny odstęp */
+    border: 1px solid #ccc; /* Dodaj obramowanie */
+    border-radius: 5px; /* Zaokrągl brzegi */
+}
