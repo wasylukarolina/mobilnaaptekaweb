@@ -18,7 +18,10 @@ const NewDrug = () => {
     const [filteredProductNames, setFilteredProductNames] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectedProductNames, setSelectedProductNames] = useState([]);
-
+    const [expiryDate, setExpiryDate] = useState(""); // Nowe pole daty ważności
+    const [doseCount, setDoseCount] = useState(""); // Nowe pole liczby dawkowań
+    const [doseTimes, setDoseTimes] = useState([]); // Nowe pole godzin dawek
+    const [customDosing, setCustomDosing] = useState(false); // Nowe pole
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
@@ -42,7 +45,6 @@ const NewDrug = () => {
             .then((xmlText) => {
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-
                 const productNodes = xmlDoc.querySelectorAll("produktLeczniczy");
                 const productInfo = Array.from(productNodes).map((productNode) => {
                     const productName = productNode.getAttribute("nazwaProduktu");
@@ -87,6 +89,57 @@ const NewDrug = () => {
         const selectedProductNames = Array.from(selectedOptions).map((option) => option.value);
         setSelectedProducts(selectedProductNames);
         setSelectedProductNames(selectedProductNames);
+    };
+
+    const handleExpiryDateChange = (event) => {
+        setExpiryDate(event.target.value);
+    };
+
+    const handleDoseCountChange = (event) => {
+        setDoseCount(event.target.value);
+        // Reset godzin dawek po zmianie liczby dawkowań
+        setDoseTimes([]);
+    };
+
+    const handleDoseTimeChange = (event, index) => {
+        const newDoseTimes = [...doseTimes];
+        newDoseTimes[index] = event.target.value;
+        setDoseTimes(newDoseTimes);
+    };
+
+    const handleCustomDosingChange = (event) => {
+        setCustomDosing(event.target.checked);
+        // Reset pól godzin dawek po zmianie niestandardowej dawki
+        setDoseTimes([]);
+    };
+
+    const renderDoseTimeFields = () => {
+        if (customDosing) {
+            return doseCount > 0 ? (
+                Array.from({ length: doseCount }).map((_, index) => (
+                    <input
+                        key={index}
+                        type="time"
+                        value={doseTimes[index] || ""}
+                        onChange={(e) => handleDoseTimeChange(e, index)}
+                    />
+                ))
+            ) : null;
+        } else {
+            return (
+                <>
+                    <input
+                        type="time"
+                        value={doseTimes[0] || ""}
+                        onChange={(e) => handleDoseTimeChange(e, 0)}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Liczba godzin między dawkami"
+                    />
+                </>
+            );
+        }
     };
 
     return (
@@ -145,6 +198,44 @@ const NewDrug = () => {
                         </ul>
                     </div>
                 )}
+
+                {/* Pole daty ważności */}
+                <div className="expiry-date">
+                    <h3>Data ważności:</h3>
+                    <input
+                        type="date"
+                        value={expiryDate}
+                        onChange={handleExpiryDateChange}
+                    />
+                </div>
+
+                {/* Pole liczby dawkowań */}
+                <div className="dose-count">
+                    <h3>Liczba dawkowań:</h3>
+                    <select
+                        value={doseCount}
+                        onChange={handleDoseCountChange}
+                    >
+                        <option value="">Wybierz liczbę dawkowań</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+
+                <div className="custom-dosing">
+                    <h3>Niestandardowe dawkowanie:</h3>
+                    <input
+                        type="checkbox"
+                        checked={customDosing}
+                        onChange={handleCustomDosingChange}
+                    />
+                </div>
+
+                <div className="dose-times">
+                    <h3>Godziny dawek:</h3>
+                    {renderDoseTimeFields()}
+                </div>
             </div>
         </div>
     );
