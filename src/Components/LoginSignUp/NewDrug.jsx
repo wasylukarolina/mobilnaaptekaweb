@@ -14,6 +14,10 @@ const NewDrug = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [productNames, setProductNames] = useState([]);
     const [filterText, setFilterText] = useState("");
+    const [filteredProductNames, setFilteredProductNames] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectedProductNames, setSelectedProductNames] = useState([]);
+
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
@@ -63,6 +67,22 @@ const NewDrug = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
+    const handleFilterChange = (text) => {
+        setFilterText(text);
+        // Filtruj produkty na podstawie wprowadzonego tekstu
+        const filtered = productNames.filter((productName) =>
+            productName.toLowerCase().includes(text.toLowerCase())
+        );
+        setFilteredProductNames(filtered);
+    };
+
+    const handleProductSelect = (event) => {
+        const selectedOptions = event.target.selectedOptions;
+        const selectedProductNames = Array.from(selectedOptions).map((option) => option.value);
+        setSelectedProducts(selectedProductNames);
+        setSelectedProductNames(selectedProductNames);
+    };
+
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
             <div className="sidebar">
@@ -88,20 +108,29 @@ const NewDrug = () => {
                     type="text"
                     placeholder="Wyszukaj lek"
                     value={filterText}
-                    onChange={(e) => setFilterText(e.target.value)}
+                    onChange={(e) => handleFilterChange(e.target.value)}
                 />
-                <select value={filterText} onChange={(e) => setFilterText(e.target.value)}>
-                    <option value="">Wybierz lek</option>
-                    {productNames
-                        .filter((productName) =>
-                            productName.toLowerCase().includes(filterText.toLowerCase())
-                        )
-                        .map((productName, index) => (
-                            <option key={index} value={productName}>
-                                {productName}
-                            </option>
-                        ))}
-                </select>
+                <div className="product-list">
+                    {filteredProductNames.length > 0 && (
+                        <select multiple value={selectedProducts} onChange={handleProductSelect}>
+                            {filteredProductNames.map((productName, index) => (
+                                <option key={index} value={productName}>
+                                    {productName}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                </div>
+                {selectedProductNames.length > 0 && (
+                    <div className="selected-products">
+                        <h3>Wybrane leki:</h3>
+                        <ul>
+                            {selectedProductNames.map((productName, index) => (
+                                <li key={index}>{productName}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
         </div>
     );
