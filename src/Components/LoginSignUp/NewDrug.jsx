@@ -260,7 +260,7 @@ const NewDrug = () => {
                 <img src={menu_icon} alt="" />
             </button>
 
-            <div className="content">
+            <div className="content with-background">
                 <h1>Dodaj lek</h1>
                 <h2>Wyszukaj lub wybierz lek:</h2>
                 <input

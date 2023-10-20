@@ -99,13 +99,12 @@ const MainView = () => {
                 <img src={menu_icon} alt="" />
             </button>
 
-            <div className="content">
+            <div className="content with-background"> {/* Dodaj klasę "with-background" */}
                 <h1>
                     {nickname && <p>Witaj, {nickname}!</p>}
                 </h1>
                 <MyCalendar />
             </div>
-
         </div>
     );
 };
