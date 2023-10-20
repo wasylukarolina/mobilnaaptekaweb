@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
@@ -8,6 +8,7 @@ import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
 import productData from '../Assets/Rejestr_Produktow_Leczniczych_calosciowy_stan_na_dzien_20230511.xml';
 import './NewDrug.css';
+import { addHours } from 'date-fns';
 
 const NewDrug = () => {
     const navigate = useNavigate();
@@ -22,6 +23,7 @@ const NewDrug = () => {
     const [doseCount, setDoseCount] = useState(""); // Nowe pole liczby dawkowań
     const [doseTimes, setDoseTimes] = useState([]); // Nowe pole godzin dawek
     const [customDosing, setCustomDosing] = useState(false); // Nowe pole
+    const [interval, setInterval] = useState(0); // Domyślnie ustaw na 0
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
@@ -113,6 +115,67 @@ const NewDrug = () => {
         setDoseTimes([]);
     };
 
+    const handleSaveToFirestore = async () => {
+        if (customDosing) {
+            // Obsługa niestandardowego dawkowania
+            const userId = auth.currentUser.uid;
+            const db = getFirestore(auth.app);
+            const lekiRef = collection(db, "leki");
+            const newLek = {
+                userId,
+                nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
+                dataWaznosci: expiryDate,
+                dawkowanie: doseTimes.filter(time => time !== ""),
+            };
+
+            try {
+                await addDoc(lekiRef, newLek);
+                console.log("Lek został zapisany w bazie Firestore.");
+                // Możesz dodać obsługę sukcesu lub nawigacji na inną stronę po zapisaniu.
+            } catch (error) {
+                console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
+            }
+        } else {
+            // Obsługa standardowego dawkowania
+            if (doseCount && expiryDate && doseTimes[0]) {
+                const userId = auth.currentUser.uid;
+                const db = getFirestore(auth.app);
+                const lekiRef = collection(db, "leki");
+                const newLek = {
+                    userId,
+                    nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
+                    dataWaznosci: expiryDate,
+                    dawkowanie: [doseTimes[0]],
+                };
+
+                const intervalInput = document.querySelector("#interval");
+                const interval = parseInt(intervalInput.value, 10); // Przekształć na liczbę całkowitą
+
+                for (let i = 1; i < doseCount; i++) {
+                    const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
+                    if (!isNaN(interval)) { // Sprawdź, czy interval jest liczbą
+                        const [hours, minutes] = previousTime.split(":").map(Number);
+                        let nextHours = hours + interval;
+                        if (nextHours >= 24) {
+                            nextHours -= 24;
+                        }
+                        const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
+                        newLek.dawkowanie.push(nextTime);
+                    }
+                }
+
+                try {
+                    await addDoc(lekiRef, newLek);
+                    console.log("Lek został zapisany w bazie Firestore.");
+                    // Możesz dodać obsługę sukcesu lub nawigacji na inną stronę po zapisaniu.
+                } catch (error) {
+                    console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
+                }
+            }
+        }
+
+    };
+
     const renderDoseTimeFields = () => {
         if (customDosing) {
             return doseCount > 0 ? (
@@ -135,8 +198,12 @@ const NewDrug = () => {
                     />
                     <input
                         type="number"
+                        id="interval" // Dodaj id, aby później odnaleźć to pole
                         placeholder="Liczba godzin między dawkami"
+                        value={interval} // Dodaj wartość do przechowywania liczby godzin
+                        onChange={(e) => setInterval(parseInt(e.target.value, 10))} // Aktualizuj stan "interval" po zmianie
                     />
+
                 </>
             );
         }
@@ -236,6 +303,8 @@ const NewDrug = () => {
                     <h3>Godziny dawek:</h3>
                     {renderDoseTimeFields()}
                 </div>
+
+                <button onClick={handleSaveToFirestore}>Zatwierdź</button>
             </div>
         </div>
     );
