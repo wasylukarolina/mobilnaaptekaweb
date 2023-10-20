@@ -353,7 +353,10 @@ const NewDrug = () => {
                         {renderDoseTimeFields()}
                     </div>
 
-                    <button onClick={handleSaveToFirestore}>Zatwierdź</button>
+                    <button id="save-button" onClick={handleSaveToFirestore}>
+                        Zatwierdź
+                    </button>
+
 
                 </div>
             </div>

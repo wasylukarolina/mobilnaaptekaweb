@@ -203,9 +203,6 @@
     transform: scale(1.2); /* Zwiększ rozmiar checkboxa */
     border: 2px solid transparent; /* Usuń obramowanie */
     border-radius: 5px; /* Zaokrągl rogi obramowania */
-}
-
-.custom-dosing-field input[type="checkbox"]:checked {
     background-color: #356F90; /* Zmień tło na niebieskie po zaznaczeniu */
     border: 2px solid #356F90; /* Dodaj obramowanie po zaznaczeniu */
 }
@@ -251,4 +248,23 @@
 .dose-count-field, .custom-dosing-field {
     flex: 1;
     margin-right: 20px; /* Dodatkowy margines między polami */
+}
+
+.content.with-background button {
+    display: flex;
+    border: none;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #AD4027;
+    background: white;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; /* Wyśrodkowanie zawartości */
 }
