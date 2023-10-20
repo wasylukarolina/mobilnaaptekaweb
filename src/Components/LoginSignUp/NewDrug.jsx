@@ -20,7 +20,7 @@ const NewDrug = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectedProductNames, setSelectedProductNames] = useState([]);
     const [expiryDate, setExpiryDate] = useState(""); // Nowe pole daty ważności
-    const [doseCount, setDoseCount] = useState(""); // Nowe pole liczby dawkowań
+    const [doseCount, setDoseCount] = useState(1); // Nowe pole liczby dawkowań
     const [doseTimes, setDoseTimes] = useState([]); // Nowe pole godzin dawek
     const [customDosing, setCustomDosing] = useState(false); // Nowe pole
     const [interval, setInterval] = useState(0); // Domyślnie ustaw na 0
@@ -261,24 +261,21 @@ const NewDrug = () => {
             </button>
 
             <div className="content with-background">
-                <h1>Dodaj lek</h1>
+                <h1> </h1>
                 <div className="drug-entry-field">
                     <h2>Wyszukaj lub wybierz lek:</h2>
-                    <input
-                        style={{
-                            width: '493px',  // Stała szerokość
-                        }}
-                        type="text"
-                        placeholder="Wyszukaj lek"
-                        value={filterText}
-                        onChange={(e) => handleFilterChange(e.target.value)}
-                    />
+                    <div className="search-input-container">
+                        <input
+                            type="text"
+                            placeholder="Wyszukaj lek"
+                            value={filterText}
+                            onChange={(e) => handleFilterChange(e.target.value)}
+                        />
+                    </div>
+
                     <div className="product-list">
                         {filteredProductNames.length > 0 && (
                             <select
-                                style={{
-                                    width: '500px',  // Stała szerokość
-                                }}
                                 multiple value={selectedProducts} onChange={handleProductSelect}>
                                 {filteredProductNames.map((productInfo, index) => (
                                     <option key={index} value={productInfo}>
@@ -289,20 +286,22 @@ const NewDrug = () => {
                         )}
                     </div>
 
-                    {selectedProductNames.length > 0 && (
-                        <div className="selected-products">
-                            <h3>Wybrane leki:</h3>
-                            <ul>
-                                {selectedProductNames.map((productName, index) => (
-                                    <li key={index}>{productName}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
+                    {/*{selectedProductNames.length > 0 && (*/}
+                    {/*    <div className="selected-products">*/}
+                    {/*        <h3>Wybrane leki:</h3>*/}
+                    {/*        <ul>*/}
+                    {/*            {selectedProductNames.map((productName, index) => (*/}
+                    {/*                <li key={index}>{productName}</li>*/}
+                    {/*            ))}*/}
+                    {/*        </ul>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
+
+                    <h3>Data ważności:</h3>
 
                     {/* Pole daty ważności */}
                     <div className="expiry-date">
-                        <h3>Data ważności:</h3>
+
                         <input
                             type="date"
                             value={expiryDate}
@@ -310,8 +309,8 @@ const NewDrug = () => {
                         />
                     </div>
 
+                    <h3>Liczba tabletek:</h3>
                     <div className="tablets-count">
-                        <h3>Liczba tabletek:</h3>
                         <input
                             type="number"
                             value={tabletsCount}
@@ -320,14 +319,18 @@ const NewDrug = () => {
                     </div>
 
 
+                    <div className="labels">
+                        <h3>Liczba dawkowań:</h3>
+                        <h3>Niestandardowe dawkowanie:</h3>
+                    </div>
+
                     <div className="dose-count custom-dosing-container">
                         <div className="dose-count-field">
-                            <h3>Liczba dawkowań:</h3>
                             <select
                                 value={doseCount}
                                 onChange={handleDoseCountChange}
                             >
-                                <option value="">Wybierz liczbę dawkowań</option>
+                                <option value="">Liczba dawkowań</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -335,7 +338,6 @@ const NewDrug = () => {
                         </div>
 
                         <div className="custom-dosing-field">
-                            <h3>Niestandardowe dawkowanie:</h3>
                             <input
                                 type="checkbox"
                                 checked={customDosing}
@@ -345,8 +347,9 @@ const NewDrug = () => {
                     </div>
 
 
+
+                    <h3>Godziny dawek:</h3>
                     <div className="dose-times">
-                        <h3>Godziny dawek:</h3>
                         {renderDoseTimeFields()}
                     </div>
 
