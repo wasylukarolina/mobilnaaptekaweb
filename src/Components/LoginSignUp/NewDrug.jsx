@@ -8,7 +8,7 @@ import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
 import productData from '../Assets/Rejestr_Produktow_Leczniczych_calosciowy_stan_na_dzien_20230511.xml';
 import './NewDrug.css';
-import { addHours } from 'date-fns';
+
 
 const NewDrug = () => {
     const navigate = useNavigate();
@@ -94,8 +94,18 @@ const NewDrug = () => {
     };
 
     const handleExpiryDateChange = (event) => {
-        setExpiryDate(event.target.value);
+        const selectedDate = new Date(event.target.value);
+        const currentDate = new Date();
+
+        if (selectedDate >= currentDate) {
+            setExpiryDate(event.target.value);
+        } else {
+            // Możesz dodać tutaj obsługę błędu lub wyświetlić komunikat o nieprawidłowej dacie
+            // Na przykład:
+            alert("Nie można ustawić daty wcześniejszej niż dzisiejsza data.");
+        }
     };
+
 
     const handleDoseCountChange = (event) => {
         setDoseCount(event.target.value);
