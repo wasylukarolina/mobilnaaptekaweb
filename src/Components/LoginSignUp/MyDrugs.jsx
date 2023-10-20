@@ -2,23 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
-import { signOut } from 'firebase/auth';
+import { signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
 import "./MainView.css";
-import menu_icon from '../Assets/menu.png';
-
-
-
+import menu_icon from "../Assets/menu.png";
+import './MyDrugs.css';
 
 const MyDrugs = () => {
     const navigate = useNavigate();
     const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [userDrugs, setUserDrugs] = useState([]); // Tablica do przechowywania leków użytkownika
+    const [hoveredIndex, setHoveredIndex] = useState(null);
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
         const db = getFirestore(auth.app);
-
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("userId", "==", userId));
 
@@ -32,23 +31,36 @@ const MyDrugs = () => {
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
             });
+
+        // Pobieramy leki użytkownika
+        const lekiRef = collection(db, "leki");
+        const userDrugsQuery = query(lekiRef, where("userId", "==", userId));
+
+        getDocs(userDrugsQuery)
+            .then((querySnapshot) => {
+                const drugs = [];
+                querySnapshot.forEach((doc) => {
+                    drugs.push(doc.data());
+                });
+                setUserDrugs(drugs);
+            })
+            .catch((error) => {
+                console.error("Błąd podczas pobierania leków z Firestore:", error);
+            });
     }, []);
 
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            // Po wylogowaniu przekieruj użytkownika na stronę logowania
-            navigate('/');
+            navigate("/");
         } catch (error) {
-            console.error('Błąd podczas wylogowywania:', error);
+            console.error("Błąd podczas wylogowywania:", error);
         }
     };
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
-
-
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
@@ -64,16 +76,32 @@ const MyDrugs = () => {
                 </div>
             </div>
 
-            <button className={`sidebar-toggle ${isSidebarOpen ? "right" : "left"}`} onClick={toggleSidebar}>
+            <button
+                className={`sidebar-toggle ${isSidebarOpen ? "right" : "left"}`}
+                onClick={toggleSidebar}
+            >
                 <img src={menu_icon} alt="" />
             </button>
 
             <div className="content">
-                <h1>
-                   Moje leki
-                </h1>
+                <h1>Moje leki</h1>
+                <ul>
+                    {userDrugs.map((drug, index) => (
+                        <li
+                            key={index}
+                            onMouseEnter={() => setHoveredIndex(index)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                            className={index === hoveredIndex ? "hovered" : ""}
+                        >
+                            <strong>Nazwa leku:</strong> {drug.nazwaProduktu}
+                            <br />
+                            <strong>Data ważności:</strong> {drug.dataWaznosci}
+                            <br />
+                            {/* Dodaj inne informacje o leku, jeśli potrzebujesz */}
+                        </li>
+                    ))}
+                </ul>
             </div>
-
         </div>
     );
 };

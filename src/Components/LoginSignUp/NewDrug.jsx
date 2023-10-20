@@ -24,6 +24,8 @@ const NewDrug = () => {
     const [doseTimes, setDoseTimes] = useState([]); // Nowe pole godzin dawek
     const [customDosing, setCustomDosing] = useState(false); // Nowe pole
     const [interval, setInterval] = useState(0); // Domyślnie ustaw na 0
+    const [tabletsCount, setTabletsCount] = useState("");
+
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
@@ -136,6 +138,7 @@ const NewDrug = () => {
                 nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
                 dataWaznosci: expiryDate,
                 dawkowanie: doseTimes.filter(time => time !== ""),
+                tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
             };
 
             try {
@@ -156,6 +159,7 @@ const NewDrug = () => {
                     nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
                     dataWaznosci: expiryDate,
                     dawkowanie: [doseTimes[0]],
+                    tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
                 };
 
                 const intervalInput = document.querySelector("#interval");
@@ -285,6 +289,16 @@ const NewDrug = () => {
                         onChange={handleExpiryDateChange}
                     />
                 </div>
+
+                <div className="tablets-count">
+                    <h3>Liczba tabletek:</h3>
+                    <input
+                        type="number"
+                        value={tabletsCount}
+                        onChange={(e) => setTabletsCount(e.target.value)}
+                    />
+                </div>
+
 
                 {/* Pole liczby dawkowań */}
                 <div className="dose-count">

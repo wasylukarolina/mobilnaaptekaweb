@@ -1,0 +1,16 @@
+/* Dodaj nowy styl dla podświetlonych elementów */
+.hovered {
+    border: 2px solid #007bff; /* Przykładowy kolor obramówki */
+    padding: 10px;
+    background-color: #f0f0f0; /* Przykładowy kolor tła */
+    cursor: pointer;
+}
+
+/* Styl dla elementów listy */
+ul li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Możesz dostosować wygląd elementów listy według własnych preferencji */
