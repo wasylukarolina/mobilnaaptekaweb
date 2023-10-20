@@ -54,8 +54,23 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center; /* Wyśrodkowanie w pionie */
-    justify-content: center; /* Wyśrodkowanie w poziomie */
     height: 100%; /* Rozciągnięcie zawartości na całą wysokość sidebaru */
+}
+
+.centered-content a {
+    font-size: 18px;
+    text-decoration: none;
+    color: white;
+    margin-bottom: 20px; /* Dodaj odstęp na dole linków */
+    transition: color 0.3s; /* Dodaj płynne przejście dla zmiany koloru tekstu */
+}
+
+.centered-content a:hover {
+    font-size: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.8);
 }
 
 .centered-content h2 {
@@ -87,7 +102,7 @@ img {
     gap: 30px;
     margin: 20px auto;
     text-align: center; /* Wyśrodkowanie zawartości */
-    margin-top: 500px; /* Umieść na dole */
+    margin-top: 400px; /* Umieść na dole */
 }
 
 .main-view.sidebar-open {
