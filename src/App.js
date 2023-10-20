@@ -5,7 +5,7 @@ import NewDrug from "./Components/LoginSignUp/NewDrug";
 import MyDrugs from "./Components/LoginSignUp/MyDrugs";
 import Health from "./Components/LoginSignUp/Health";
 import UpdateHealth from "./Components/LoginSignUp/UpdateHealth";
-
+import DrugOnce from "./Components/LoginSignUp/DrugOnce";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebaseConfig";
@@ -25,6 +25,7 @@ function App() {
                 <Route path="/mydrugs" element={user ? <MyDrugs /> : <Navigate to="/" />} />
                 <Route path="/health" element={user ? <Health /> : <Navigate to="/" />} />
                 <Route path="/updatehealth" element={user ? <UpdateHealth /> : <Navigate to="/" />} />
+                <Route path="/drugonce" element={user ? <DrugOnce /> : <Navigate to="/" />} />
             </Routes>
         </Router>
 
