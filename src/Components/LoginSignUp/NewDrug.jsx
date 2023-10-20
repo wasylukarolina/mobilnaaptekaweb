@@ -25,6 +25,8 @@ const NewDrug = () => {
     const [customDosing, setCustomDosing] = useState(false); // Nowe pole
     const [interval, setInterval] = useState(0); // Domyślnie ustaw na 0
     const [tabletsCount, setTabletsCount] = useState("");
+    const [isDuplicateDrug, setIsDuplicateDrug] = useState(false);
+
 
 
     useEffect(() => {
@@ -128,29 +130,24 @@ const NewDrug = () => {
     };
 
     const handleSaveToFirestore = async () => {
-        if (customDosing) {
-            // Obsługa niestandardowego dawkowania
-            const userId = auth.currentUser.uid;
-            const db = getFirestore(auth.app);
-            const lekiRef = collection(db, "leki");
-            const newLek = {
-                userId,
-                nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
-                dataWaznosci: expiryDate,
-                dawkowanie: doseTimes.filter(time => time !== ""),
-                tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
-            };
+        const userId = auth.currentUser.uid;
+        const db = getFirestore(auth.app);
+        const lekiRef = collection(db, "leki");
 
-            try {
-                await addDoc(lekiRef, newLek);
-                console.log("Lek został zapisany w bazie Firestore.");
-                // Możesz dodać obsługę sukcesu lub nawigacji na inną stronę po zapisaniu.
-            } catch (error) {
-                console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
-            }
-        } else {
-            // Obsługa standardowego dawkowania
-            if (doseCount && expiryDate && doseTimes[0]) {
+        // Sprawdź, czy wybrany lek istnieje już w bazie dla tego użytkownika
+        const existingDrugQuery = query(lekiRef, where("userId", "==", userId), where("nazwaProduktu", "==", selectedProductNames[0]));
+
+        const existingDrugSnapshot = await getDocs(existingDrugQuery);
+
+        if (existingDrugSnapshot.size > 0) {
+            // Lek o takiej nazwie już istnieje w bazie dla tego użytkownika
+            setIsDuplicateDrug(true);
+            alert("Lek już istnieje w twojej bazie.");
+            return; // Zatrzymaj proces zapisywania
+        }
+
+            if (customDosing) {
+                // Obsługa niestandardowego dawkowania
                 const userId = auth.currentUser.uid;
                 const db = getFirestore(auth.app);
                 const lekiRef = collection(db, "leki");
@@ -158,25 +155,9 @@ const NewDrug = () => {
                     userId,
                     nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
                     dataWaznosci: expiryDate,
-                    dawkowanie: [doseTimes[0]],
+                    dawkowanie: doseTimes.filter(time => time !== ""),
                     tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
                 };
-
-                const intervalInput = document.querySelector("#interval");
-                const interval = parseInt(intervalInput.value, 10); // Przekształć na liczbę całkowitą
-
-                for (let i = 1; i < doseCount; i++) {
-                    const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
-                    if (!isNaN(interval)) { // Sprawdź, czy interval jest liczbą
-                        const [hours, minutes] = previousTime.split(":").map(Number);
-                        let nextHours = hours + interval;
-                        if (nextHours >= 24) {
-                            nextHours -= 24;
-                        }
-                        const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
-                        newLek.dawkowanie.push(nextTime);
-                    }
-                }
 
                 try {
                     await addDoc(lekiRef, newLek);
@@ -185,8 +166,45 @@ const NewDrug = () => {
                 } catch (error) {
                     console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
                 }
+            } else {
+                // Obsługa standardowego dawkowania
+                if (doseCount && expiryDate && doseTimes[0]) {
+                    const userId = auth.currentUser.uid;
+                    const db = getFirestore(auth.app);
+                    const lekiRef = collection(db, "leki");
+                    const newLek = {
+                        userId,
+                        nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
+                        dataWaznosci: expiryDate,
+                        dawkowanie: [doseTimes[0]],
+                        tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
+                    };
+
+                    const intervalInput = document.querySelector("#interval");
+                    const interval = parseInt(intervalInput.value, 10); // Przekształć na liczbę całkowitą
+
+                    for (let i = 1; i < doseCount; i++) {
+                        const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
+                        if (!isNaN(interval)) { // Sprawdź, czy interval jest liczbą
+                            const [hours, minutes] = previousTime.split(":").map(Number);
+                            let nextHours = hours + interval;
+                            if (nextHours >= 24) {
+                                nextHours -= 24;
+                            }
+                            const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
+                            newLek.dawkowanie.push(nextTime);
+                        }
+                    }
+
+                    try {
+                        await addDoc(lekiRef, newLek);
+                        console.log("Lek został zapisany w bazie Firestore.");
+                        // Możesz dodać obsługę sukcesu lub nawigacji na inną stronę po zapisaniu.
+                    } catch (error) {
+                        console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
+                    }
+                }
             }
-        }
 
     };
 
