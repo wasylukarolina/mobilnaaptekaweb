@@ -74,20 +74,6 @@ const MainView = () => {
 
     const localizer = momentLocalizer(moment);
 
-    // const events = [
-    //     {
-    //         title: 'Spotkanie z lekarzem',
-    //         start: new Date(2023, 10, 20, 10, 0),
-    //         end: new Date(2023, 10, 20, 11, 0),
-    //     },
-    //     {
-    //         title: 'Badanie krwi',
-    //         start: new Date(2023, 10, 25, 14, 0),
-    //         end: new Date(2023, 10, 25, 15, 0),
-    //     },
-    //     // Dodaj inne wydarzenia
-    // ];
-
     const MyCalendar = () => {
         return (
             <Calendar
