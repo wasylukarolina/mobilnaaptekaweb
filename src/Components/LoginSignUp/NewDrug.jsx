@@ -332,14 +332,12 @@ const NewDrug = () => {
                             value={tabletsCount}
                             onChange={(e) => {
                                 const newValue = parseInt(e.target.value, 10);
-                                if (!isNaN(newValue) && newValue >= 0) {
+                                if (!isNaN(newValue) && newValue >= 0 && newValue <= 120) {
                                     setTabletsCount(newValue);
                                 }
                             }}
                         />
                     </div>
-
-
 
                     <div className="labels">
                         <h3>Liczba dawkowań:</h3>
