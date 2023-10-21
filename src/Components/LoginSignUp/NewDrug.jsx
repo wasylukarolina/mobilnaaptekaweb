@@ -104,7 +104,7 @@ const NewDrug = () => {
         } else {
             // Możesz dodać tutaj obsługę błędu lub wyświetlić komunikat o nieprawidłowej dacie
             // Na przykład:
-            alert("Nie można ustawić daty wcześniejszej niż dzisiejsza data.");
+            alert("Nie można ustawić daty wcześniejszej niż dzisiejsza data. Nie używaj przeterminowanych leków.");
         }
     };
 

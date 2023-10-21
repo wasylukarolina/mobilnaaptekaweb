@@ -94,6 +94,10 @@ const MyDrugs = () => {
                 }
             });
 
+            // Usunięcie leku z listy userDrugs
+            const updatedUserDrugs = userDrugs.filter((drug) => drug.id !== drugToDelete.id);
+            setUserDrugs(updatedUserDrugs);
+
             // Zamknij modal po usunięciu leku
             setSelectedDrug(null);
         } catch (error) {

@@ -33,9 +33,14 @@
     background-color: white;
     border-radius: 10px;
     padding: 10px;
-    width: 480px; /* Szerokość 493px */
+    width: 80%;
     border: 1px solid #356F90;
-    transition: border-color 0.3s; /* Dodaj efekt przejścia dla border-color */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-input-container:hover {
+    border-color: #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .search-input-container input {
@@ -52,7 +57,6 @@
     color: #356F90; /* Kolor placeholdera na #356F90 */
 }
 
-
 .search-input-container input:focus {
     outline: none; /* Usuń domyślną obwódkę */
     border-color: transparent; /* Ustaw przezroczysty kolor obramowania po kliknięciu */
@@ -63,7 +67,13 @@
     border-radius: 10px; /* Zaokrągl rogi */
     padding: 10px; /* Wewnętrzny odstęp */
     background-color: white; /* Białe tło */
-    width: 480px; /* Szerokość 493px */
+    width: 80%;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.product-list:hover {
+    border-color: #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .product-list select {
@@ -75,8 +85,6 @@
     font-size: 16px;
     color: #356F90;
 }
-
-
 
 .product-list select:focus {
     outline: none; /* Usuń domyślny niebieski zaznaczenie na elemencie select */
@@ -105,6 +113,12 @@
     width: 50%;
     text-align: center; /* Wyśrodkowanie tekstu */
     height: 20px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.expiry-date:hover {
+    border-color: #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .expiry-date input {
@@ -138,7 +152,14 @@
     width: 50%;
     text-align: center; /* Wyśrodkowanie tekstu */
     height: 20px;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
+
+.tablets-count:hover {
+    border-color: #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
 .tablets-count input {
     height: 20px;
     width: 100%;
@@ -212,14 +233,19 @@
     border-radius: 10px; /* Zaokrągl rogi */
     padding: 10px; /* Wewnętrzny odstęp */
     background-color: white; /* Białe tło */
-    width: 480px; /* Szerokość 480px */
+    width: 80%;
     ext-align: center; /* Wyśrodkuj zawartość */
     margin: 0 auto; /* Wyśrodkuj na stronie */
     display: flex; /* Ustaw wyświetlanie jako flexbox */
     justify-content: center; /* Wyśrodkuj zawartość w poziomie */
-    align-items: center; /* Wyśrodkuj zawartość w pionie */
+    align-items: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+.dose-times:hover {
+    border-color: #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
 
 /* Styl dla input typu "time" wewnątrz dose-times */
 .dose-times input[type="time"] {
@@ -238,7 +264,6 @@
     text-align: center; /* Wyśrodkuj zawartość */
     outline: none; /* Usuń obramowanie po kliknięciu */
 }
-
 
 .dose-count.custom-dosing-container {
     display: flex;
@@ -267,6 +292,11 @@
     cursor: pointer;
     gap: 30px;
     margin: 20px auto;
-    text-align: center; /* Wyśrodkowanie zawartości */
+    text-align: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+.content.with-background #save-button:hover {
+    border: 1px solid #356F90;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
