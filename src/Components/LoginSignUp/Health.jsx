@@ -6,7 +6,7 @@ import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import "./Health.css"; // Import stylów dla komponentu Health
 
 const Health = () => {
@@ -18,6 +18,7 @@ const Health = () => {
     const [ciaza, setCiaza] = useState(false);
     const [chorobySerca, setChorobySerca] = useState(false);
 
+
     useEffect(() => {
         const userId = auth.currentUser.uid;
         const db = getFirestore(auth.app);
@@ -25,12 +26,20 @@ const Health = () => {
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("userId", "==", userId));
 
-        getDocs(q)
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    setNickname(userData.nickname);
-                });
+        const diseasesRef = collection(db, "diseases");
+        const userDiseasesDoc = doc(diseasesRef, userId);
+
+        // Pobieranie danych z Firebase
+        getDoc(userDiseasesDoc)
+            .then((userDiseasesSnap) => {
+                const userDiseasesData = userDiseasesSnap.data();
+                if (userDiseasesData) {
+                    // Ustaw stan checkboxów na podstawie danych z Firebase
+                    setCukrzyca(userDiseasesData.cukrzyca || false);
+                    setAsthma(userDiseasesData.asthma || false);
+                    setCiaza(userDiseasesData.ciaza || false);
+                    setChorobySerca(userDiseasesData.chorobySerca || false);
+                }
             })
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
@@ -50,6 +59,51 @@ const Health = () => {
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
+
+    const handleCheckboxChange = async (checkboxName, isChecked) => {
+        try {
+            const userId = auth.currentUser.uid;
+            const db = getFirestore(auth.app);
+
+            // Zamiast kolekcji "users" użyj kolekcji "diseases"
+            const diseasesRef = collection(db, 'diseases');
+            const userDiseasesDoc = doc(diseasesRef, userId);
+
+            // Pobierz aktualne dane o chorobach użytkownika
+            const userDiseasesSnap = await getDoc(userDiseasesDoc);
+            const userDiseases = userDiseasesSnap.data() || {};
+
+            // Zaktualizuj dane o chorobach
+            userDiseases[checkboxName] = isChecked;
+
+            // Dodaj pole "userId" do danych o chorobach
+            userDiseases['userId'] = userId;
+
+            // Zapisz zaktualizowane dane w Firebase
+            await setDoc(userDiseasesDoc, userDiseases);
+
+            // Zaktualizuj lokalny stan
+            switch (checkboxName) {
+                case 'cukrzyca':
+                    setCukrzyca(isChecked);
+                    break;
+                case 'asthma':
+                    setAsthma(isChecked);
+                    break;
+                case 'ciaza':
+                    setCiaza(isChecked);
+                    break;
+                case 'chorobySerca':
+                    setChorobySerca(isChecked);
+                    break;
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.error('Błąd podczas aktualizacji danych w Firebase:', error);
+        }
+    };
+
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
@@ -74,19 +128,35 @@ const Health = () => {
                 <h1>Stan zdrowia</h1>
                 <div className="health">
                     <label>
-                        <input type="checkbox" checked={cukrzyca} onChange={() => setCukrzyca(!cukrzyca)} />
+                        <input
+                            type="checkbox"
+                            checked={cukrzyca}
+                            onChange={(e) => handleCheckboxChange('cukrzyca', e.target.checked)}
+                        />
                         Cukrzyca
                     </label>
                     <label>
-                        <input type="checkbox" checked={asthma} onChange={() => setAsthma(!asthma)} />
+                        <input
+                            type="checkbox"
+                            checked={asthma}
+                            onChange={(e) => handleCheckboxChange('asthma', e.target.checked)}
+                        />
                         Astma
                     </label>
                     <label>
-                        <input type="checkbox" checked={ciaza} onChange={() => setCiaza(!ciaza)} />
+                        <input
+                            type="checkbox"
+                            checked={ciaza}
+                            onChange={(e) => handleCheckboxChange('ciaza', e.target.checked)}
+                        />
                         Ciąża
                     </label>
                     <label>
-                        <input type="checkbox" checked={chorobySerca} onChange={() => setChorobySerca(!chorobySerca)} />
+                        <input
+                            type="checkbox"
+                            checked={chorobySerca}
+                            onChange={(e) => handleCheckboxChange('chorobySerca', e.target.checked)}
+                        />
                         Choroby serca
                     </label>
                 </div>
