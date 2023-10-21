@@ -12,7 +12,6 @@ import './NewDrug.css';
 
 const NewDrug = () => {
     const navigate = useNavigate();
-    const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [productNames, setProductNames] = useState([]);
     const [filterText, setFilterText] = useState("");
@@ -39,7 +38,6 @@ const NewDrug = () => {
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    setNickname(userData.nickname);
                 });
             })
             .catch((error) => {

@@ -12,7 +12,6 @@ import './MyDrugs.css';
 
 const MyDrugs = () => {
     const navigate = useNavigate();
-    const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [userDrugs, setUserDrugs] = useState([]); // Tablica do przechowywania leków użytkownika
     const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -29,7 +28,6 @@ const MyDrugs = () => {
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    setNickname(userData.nickname);
                 });
             })
             .catch((error) => {

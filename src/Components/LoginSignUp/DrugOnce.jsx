@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, addDoc, where, getDocs, serverTimestamp} from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from '../Assets/menu.png';
+import './MyDrugs.css';
+import productData from "../Assets/Rejestr_Produktow_Leczniczych_calosciowy_stan_na_dzien_20230511.xml";
 
 
 const Health = () => {
     const navigate = useNavigate();
-    const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [productNames, setProductNames] = useState([]);
+    const [filterText, setFilterText] = useState("");
+    const [filteredProductNames, setFilteredProductNames] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectedProductNames, setSelectedProductNames] = useState([]);
+    const [selectedTime, setSelectedTime] = useState(""); // Dodaj te zmienne do stanu komponentu
+
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
@@ -24,13 +32,33 @@ const Health = () => {
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    setNickname(userData.nickname);
                 });
             })
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
             });
+
+        fetch(productData)
+            .then((response) => response.text())
+            .then((xmlText) => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                const productNodes = xmlDoc.querySelectorAll("produktLeczniczy");
+                const productInfo = Array.from(productNodes).map((productNode) => {
+                    const productName = productNode.getAttribute("nazwaProduktu");
+                    const moc = productNode.getAttribute("moc");
+                    const combinedName = `${productName} ${moc}`;
+                    return combinedName;
+                });
+
+                setProductNames(productInfo);
+            })
+            .catch((error) => {
+                console.error("Błąd podczas pobierania pliku XML:", error);
+            });
     }, []);
+
+
 
     const handleLogout = async () => {
         try {
@@ -44,6 +72,63 @@ const Health = () => {
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
+    };
+
+    const handleProductSelect = (event) => {
+        const selectedOptions = event.target.selectedOptions;
+        const selectedProductNames = Array.from(selectedOptions).map((option) => option.value);
+        setSelectedProducts(selectedProductNames);
+        setSelectedProductNames(selectedProductNames);
+    };
+
+    const handleFilterChange = (text) => {
+        setFilterText(text);
+        // Filtruj produkty na podstawie wprowadzonego tekstu
+        const filtered = productNames.filter((productName) =>
+            productName.toLowerCase().includes(text.toLowerCase())
+        );
+        setFilteredProductNames(filtered);
+    };
+
+    const handleSaveToFirestore = async () => {
+        try {
+            const userId = auth.currentUser.uid;
+            const db = getFirestore(auth.app);
+            const medicationsRef = collection(db, 'checkedMedications');
+
+            // Pobierz nazwę wybranego leku, datę i godzinę
+            const selectedMedication = selectedProducts[0];
+            const selectedDate = new Date(); // Pobierz aktualną datę i godzinę
+            const selectedHour = selectedTime;
+
+            // Pobierz dzień, miesiąc, rok, godzinę i minutę
+            const day = selectedDate.getDate();
+            const month = selectedDate.getMonth() + 1; // Miesiące są od 0 do 11, więc dodajemy 1
+            const year = selectedDate.getFullYear();
+            const hour = selectedHour.split(":")[0]; // Pobierz godzinę z czasu
+            const minute = selectedHour.split(":")[1]; // Pobierz minutę z czasu
+
+            // Utwórz formaty daty i godziny
+            const formattedDate = `${day}/${month}/${year}`;
+            const formattedTime = `${hour}:${minute}`;
+
+            // Dodaj dane do Firebase
+            await addDoc(medicationsRef, {
+                userId,
+                medicationName: selectedMedication,
+                checkedDate: formattedDate,
+                checkedTime: formattedTime,
+            });
+
+            // Zresetuj stan wybranych leków i godziny
+            setSelectedProducts([]);
+            setSelectedTime("");
+
+            // Wyświetl alert
+            window.alert('Dane zostały zapisane.');
+        } catch (error) {
+            console.error('Błąd podczas zapisywania danych do Firebase:', error);
+        }
     };
 
 
@@ -67,10 +152,55 @@ const Health = () => {
                 <img src={menu_icon} alt="" />
             </button>
 
-            <div className="content">
-                <h1>
-                    Zaznacz wzięcie leku
-                </h1>
+            <div className="content with-background">
+                <h1> </h1>
+                <div className="drug-entry-field">
+                    <h2>Wyszukaj lub wybierz lek:</h2>
+                    <div className="search-input-container">
+                        <input
+                            type="text"
+                            placeholder="Wyszukaj lub wybierz lek"
+                            value={selectedProducts[0] || ""}
+                            onChange={(e) => {
+                                const text = e.target.value;
+                                setSelectedProducts([text]); // Zaktualizuj wybrany lek
+                                handleFilterChange(text); // Obsłuż filtrowanie leków na podstawie wprowadzonego tekstu
+                            }}
+                        />
+                    </div>
+
+                    <div className="product-list">
+                        {filteredProductNames.length > 0 && (
+                            <select
+                                multiple
+                                value={selectedProducts}
+                                onChange={handleProductSelect}
+                            >
+                                {filteredProductNames.map((productInfo, index) => (
+                                    <option key={index} value={productInfo}>
+                                        {productInfo}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
+                    <h3>Wybierz godzinę:</h3>
+                    <div className="dose-times time-picker">
+                        <input
+                            type="time"
+                            id="selected-time"
+                            value={selectedTime}
+                            onChange={(e) => setSelectedTime(e.target.value)}
+                        />
+                    </div>
+
+                    <button id="save-button" onClick={handleSaveToFirestore}>
+                        Zatwierdź
+                    </button>
+
+
+                </div>
             </div>
 
         </div>
