@@ -18,20 +18,40 @@ const MainView = () => {
     const navigate = useNavigate();
     const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [events, setEvents] = useState([]); // Dodaj stan events
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
         const db = getFirestore(auth.app);
-
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("userId", "==", userId));
+        const medicationsRef = collection(db, "checkedMedications");
+        const q = query(medicationsRef, where("userId", "==", userId));
 
         getDocs(q)
             .then((querySnapshot) => {
+                const events = [];
                 querySnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    setNickname(userData.nickname);
+                    const medicationData = doc.data();
+                    const { medicationName, checkedDate, checkedTime } = medicationData;
+
+                    // Przetwórz datę i godzinę na obiekt Date
+                    const dateParts = checkedDate.split("/"); // Załóżmy, że data jest w formacie dd/mm/yyyy
+                    const timeParts = checkedTime.split(":");
+                    const start = new Date(
+                        parseInt(dateParts[2]), // Rok
+                        parseInt(dateParts[1]) - 1, // Miesiąc (odejmujemy 1, bo miesiące są od 0 do 11)
+                        parseInt(dateParts[0]), // Dzień
+                        parseInt(timeParts[0]), // Godzina
+                        parseInt(timeParts[1]) // Minuta
+                    );
+                    const end = new Date(start.getTime() + 60 * 60 * 1000); // Załóżmy, że wydarzenia trwają godzinę
+
+                    events.push({
+                        title: medicationName,
+                        start,
+                        end,
+                    });
                 });
+                setEvents(events);
             })
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
@@ -54,19 +74,19 @@ const MainView = () => {
 
     const localizer = momentLocalizer(moment);
 
-    const events = [
-        {
-            title: 'Spotkanie z lekarzem',
-            start: new Date(2023, 10, 20, 10, 0),
-            end: new Date(2023, 10, 20, 11, 0),
-        },
-        {
-            title: 'Badanie krwi',
-            start: new Date(2023, 10, 25, 14, 0),
-            end: new Date(2023, 10, 25, 15, 0),
-        },
-        // Dodaj inne wydarzenia
-    ];
+    // const events = [
+    //     {
+    //         title: 'Spotkanie z lekarzem',
+    //         start: new Date(2023, 10, 20, 10, 0),
+    //         end: new Date(2023, 10, 20, 11, 0),
+    //     },
+    //     {
+    //         title: 'Badanie krwi',
+    //         start: new Date(2023, 10, 25, 14, 0),
+    //         end: new Date(2023, 10, 25, 15, 0),
+    //     },
+    //     // Dodaj inne wydarzenia
+    // ];
 
     const MyCalendar = () => {
         return (
@@ -99,7 +119,7 @@ const MainView = () => {
                 <img src={menu_icon} alt="" />
             </button>
 
-            <div className="content with-background"> {/* Dodaj klasę "with-background" */}
+            <div className="content with-background">
                 <h1>
                     {nickname && <p>Witaj, {nickname}!</p>}
                 </h1>
