@@ -110,7 +110,6 @@ const NewDrug = () => {
         }
     };
 
-
     const handleDoseCountChange = (event) => {
         setDoseCount(event.target.value);
         // Reset godzin dawek po zmianie liczby dawkowań
@@ -133,6 +132,16 @@ const NewDrug = () => {
         const userId = auth.currentUser.uid;
         const db = getFirestore(auth.app);
         const lekiRef = collection(db, "leki");
+
+        if (
+            !selectedProductNames[0] ||
+            !expiryDate ||
+            !tabletsCount ||
+            (customDosing && doseTimes.some(time => !time))
+        ) {
+            alert("Uzupełnij wszystkie pola");
+            return;
+        }
 
         // Sprawdź, czy wybrany lek istnieje już w bazie dla tego użytkownika
         const existingDrugQuery = query(lekiRef, where("userId", "==", userId), where("nazwaProduktu", "==", selectedProductNames[0]));
@@ -162,7 +171,9 @@ const NewDrug = () => {
                 try {
                     await addDoc(lekiRef, newLek);
                     console.log("Lek został zapisany w bazie Firestore.");
-                    // Możesz dodać obsługę sukcesu lub nawigacji na inną stronę po zapisaniu.
+
+                    // Dodaj alert po pomyślnym zapisie
+                    alert("Lek został pomyślnie zapisany!");
                 } catch (error) {
                     console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
                 }
@@ -199,7 +210,9 @@ const NewDrug = () => {
                     try {
                         await addDoc(lekiRef, newLek);
                         console.log("Lek został zapisany w bazie Firestore.");
-                        // Możesz dodać obsługę sukcesu lub nawigacji na inną stronę po zapisaniu.
+
+                        // Dodaj alert po pomyślnym zapisie
+                        alert("Lek został pomyślnie zapisany!");
                     } catch (error) {
                         console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
                     }
@@ -220,7 +233,7 @@ const NewDrug = () => {
                     />
                 ))
             ) : null;
-        } else {
+        } else if (!customDosing && doseCount > 1) {
             return (
                 <>
                     <input
@@ -230,13 +243,20 @@ const NewDrug = () => {
                     />
                     <input
                         type="number"
-                        id="interval" // Dodaj id, aby później odnaleźć to pole
+                        id="interval"
                         placeholder="Liczba godzin między dawkami"
-                        value={interval} // Dodaj wartość do przechowywania liczby godzin
-                        onChange={(e) => setInterval(parseInt(e.target.value, 10))} // Aktualizuj stan "interval" po zmianie
+                        value={interval}
+                        onChange={(e) => setInterval(parseInt(e.target.value, 10))}
                     />
-
                 </>
+            );
+        } else {
+            return (
+                <input
+                    type="time"
+                    value={doseTimes[0] || ""}
+                    onChange={(e) => handleDoseTimeChange(e, 0)}
+                />
             );
         }
     };
@@ -267,9 +287,9 @@ const NewDrug = () => {
                     <div className="search-input-container">
                         <input
                             type="text"
-                            placeholder="Wyszukaj lek"
-                            value={filterText}
-                            onChange={(e) => handleFilterChange(e.target.value)}
+                            placeholder="Wyszukaj lub wybierz lek"
+                            value={selectedProducts[0] || ""}
+                            onChange={(e) => setSelectedProducts([e.target.value])}
                         />
                     </div>
 
@@ -286,16 +306,6 @@ const NewDrug = () => {
                         )}
                     </div>
 
-                    {/*{selectedProductNames.length > 0 && (*/}
-                    {/*    <div className="selected-products">*/}
-                    {/*        <h3>Wybrane leki:</h3>*/}
-                    {/*        <ul>*/}
-                    {/*            {selectedProductNames.map((productName, index) => (*/}
-                    {/*                <li key={index}>{productName}</li>*/}
-                    {/*            ))}*/}
-                    {/*        </ul>*/}
-                    {/*    </div>*/}
-                    {/*)}*/}
 
                     <h3>Data ważności:</h3>
 
@@ -314,9 +324,15 @@ const NewDrug = () => {
                         <input
                             type="number"
                             value={tabletsCount}
-                            onChange={(e) => setTabletsCount(e.target.value)}
+                            onChange={(e) => {
+                                const newValue = parseInt(e.target.value, 10);
+                                if (!isNaN(newValue) && newValue >= 0) {
+                                    setTabletsCount(newValue);
+                                }
+                            }}
                         />
                     </div>
+
 
 
                     <div className="labels">
@@ -334,6 +350,7 @@ const NewDrug = () => {
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
+                                <option value="4">4</option>
                             </select>
                         </div>
 
