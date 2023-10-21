@@ -383,7 +383,6 @@ const NewDrug = () => {
                         )
                     }
 
-
                     <h3>Godziny dawek:</h3>
                     <div className="dose-times">
                         {renderDoseTimeFields()}
