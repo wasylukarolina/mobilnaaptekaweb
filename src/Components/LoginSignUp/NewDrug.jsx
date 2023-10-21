@@ -145,7 +145,6 @@ const NewDrug = () => {
 
         // Sprawdź, czy wybrany lek istnieje już w bazie dla tego użytkownika
         const existingDrugQuery = query(lekiRef, where("userId", "==", userId), where("nazwaProduktu", "==", selectedProductNames[0]));
-
         const existingDrugSnapshot = await getDocs(existingDrugQuery);
 
         if (existingDrugSnapshot.size > 0) {
@@ -191,19 +190,21 @@ const NewDrug = () => {
                         tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
                     };
 
-                    const intervalInput = document.querySelector("#interval");
-                    const interval = parseInt(intervalInput.value, 10); // Przekształć na liczbę całkowitą
+                    if (doseCount > 1) {
+                        const intervalInput = document.querySelector("#interval");
+                        const intervalValue = intervalInput ? parseInt(intervalInput.value, 10) : 0;
 
-                    for (let i = 1; i < doseCount; i++) {
-                        const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
-                        if (!isNaN(interval)) { // Sprawdź, czy interval jest liczbą
-                            const [hours, minutes] = previousTime.split(":").map(Number);
-                            let nextHours = hours + interval;
-                            if (nextHours >= 24) {
-                                nextHours -= 24;
+                        for (let i = 1; i < doseCount; i++) {
+                            const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
+                            if (!isNaN(intervalValue)) { // Sprawdź, czy intervalValue jest liczbą
+                                const [hours, minutes] = previousTime.split(":").map(Number);
+                                let nextHours = hours + intervalValue;
+                                if (nextHours >= 24) {
+                                    nextHours -= 24;
+                                }
+                                const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
+                                newLek.dawkowanie.push(nextTime);
                             }
-                            const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
-                            newLek.dawkowanie.push(nextTime);
                         }
                     }
 
@@ -218,7 +219,6 @@ const NewDrug = () => {
                     }
                 }
             }
-
     };
 
     const renderDoseTimeFields = () => {
@@ -260,6 +260,7 @@ const NewDrug = () => {
             );
         }
     };
+
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
@@ -369,6 +370,18 @@ const NewDrug = () => {
                             />
                         </div>
                     </div>
+
+                    {
+                        doseCount > 1 && !customDosing && (
+                            <input
+                                type="number"
+                                id="interval"
+                                placeholder="Liczba godzin między dawkami"
+                                value={interval}
+                                onChange={(e) => setInterval(parseInt(e.target.value, 10))}
+                            />
+                        )
+                    }
 
 
 

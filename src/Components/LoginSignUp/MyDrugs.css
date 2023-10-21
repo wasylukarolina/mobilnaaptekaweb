@@ -52,6 +52,10 @@ ul li {
 
 
 .drug-modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -62,6 +66,11 @@ ul li {
     border-radius: 10px; /* Zaokrąglone rogi */
     padding: 20px;
     text-align: center;
+
+}
+
+.drug-modal > * {
+    margin: 5px 0; /* Dostosuj odstęp według własnych preferencji */
 }
 
 .modal-content {
@@ -123,6 +132,11 @@ ul li {
     margin-bottom: -25px;
 }
 
+drug-info > * {
+    margin: 10px 0; /* Zmniejsz odstęp góra i dół */
+}
+
+
 
 .drug-info button {
     display: flex;
@@ -135,7 +149,7 @@ ul li {
     background-color: transparent;
     padding: 0;
     cursor: pointer;
-    margin: 20px 10px 20px 30px; /* Zmniejszenie marginesu z lewej strony i odstępu od tekstu */
+    margin: 20px 10px 20px 10px; /* Zmniejszenie marginesu z lewej strony i odstępu od tekstu */
 }
 
 
