@@ -32,6 +32,11 @@ const LoginSignup = () => {
             return;
         }
 
+        if (!email || !password || !nickname) {
+            alert("Wszystkie pola są wymagane.");
+            return;
+        }
+
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
@@ -40,8 +45,8 @@ const LoginSignup = () => {
             const userId = user.uid;
 
             // Dodaj dane do kolekcji "users" w Firestore
-            const db = getFirestore(app); // Inicjuj dostęp do Firestore z użyciem 'app'
-            const usersCollection = collection(db, 'users'); // Kolekcja "users"
+            const db = getFirestore(app);
+            const usersCollection = collection(db, 'users');
 
             const userData = {
                 userId: userId,
@@ -50,10 +55,16 @@ const LoginSignup = () => {
                 // Dodaj inne dane, które chcesz przekazać
             };
 
+            // Sprawdź, czy adres e-mail zawiera "@lekarz.pl"
+            if (email.includes("@lekarz.pl")) {
+                // Jeśli tak, dodaj dodatkowe dane
+                userData.rola = "L";
+            }
+
             // Dodaj dokument do kolekcji "users"
             await addDoc(usersCollection, userData);
 
-            setAction("Logowanie");
+            setAction("Logowanie"); // Przekierowanie na stronę logowania
             setEmail("");
             setPassword("");
             setNickname("");
@@ -76,8 +87,10 @@ const LoginSignup = () => {
             navigate('/mainview');
         } catch (error) {
             console.error(error);
+            alert("Nieudane logowanie. Sprawdź adres e-mail i hasło.");
         }
     };
+
 
     const handleResetPassword = () => {
         // Wysłanie e-maila z linkiem do resetowania hasła na adres powiązany z kontem
