@@ -98,39 +98,50 @@ const Health = () => {
 
             // Pobierz nazwę wybranego leku, datę i godzinę
             const selectedMedication = selectedProducts[0];
-            const selectedDate = new Date(); // Pobierz aktualną datę i godzinę
+
+            // Pobierz aktualną datę i czas
+            const currentDate = new Date();
+            const selectedDate = new Date(currentDate);
             const selectedHour = selectedTime;
 
-            // Pobierz dzień, miesiąc, rok, godzinę i minutę
-            const day = selectedDate.getDate();
-            const month = selectedDate.getMonth() + 1; // Miesiące są od 0 do 11, więc dodajemy 1
-            const year = selectedDate.getFullYear();
-            const hour = selectedHour.split(":")[0]; // Pobierz godzinę z czasu
-            const minute = selectedHour.split(":")[1]; // Pobierz minutę z czasu
+            // Porównaj wybraną godzinę z aktualną godziną
+            const currentHour = currentDate.getHours();
+            const selectedHourInt = parseInt(selectedHour.split(":")[0], 10); // Pobierz godzinę z czasu i przekształć na liczbę
 
-            // Utwórz formaty daty i godziny
-            const formattedDate = `${day}/${month}/${year}`;
-            const formattedTime = `${hour}:${minute}`;
+            if (selectedHourInt > currentHour) {
+                // Wybrana godzina jest wcześniejsza niż aktualna
+                window.alert("Nie możesz wybrać późniejszej godziny niż obecna.");
+            } else {
+                // Pobierz dzień, miesiąc, rok, godzinę i minutę
+                const day = selectedDate.getDate();
+                const month = selectedDate.getMonth() + 1; // Miesiące są od 0 do 11, więc dodajemy 1
+                const year = selectedDate.getFullYear();
+                const hour = selectedHourInt;
+                const minute = parseInt(selectedHour.split(":")[1], 10); // Pobierz minutę z czasu i przekształć na liczbę
 
-            // Dodaj dane do Firebase
-            await addDoc(medicationsRef, {
-                userId,
-                medicationName: selectedMedication,
-                checkedDate: formattedDate,
-                checkedTime: formattedTime,
-            });
+                // Utwórz formaty daty i godziny
+                const formattedDate = `${day}/${month}/${year}`;
+                const formattedTime = `${hour}:${minute}`;
 
-            // Zresetuj stan wybranych leków i godziny
-            setSelectedProducts([]);
-            setSelectedTime("");
+                // Dodaj dane do Firebase
+                await addDoc(medicationsRef, {
+                    userId,
+                    medicationName: selectedMedication,
+                    checkedDate: formattedDate,
+                    checkedTime: formattedTime,
+                });
 
-            // Wyświetl alert
-            window.alert('Dane zostały zapisane.');
+                // Zresetuj stan wybranych leków i godziny
+                setSelectedProducts([]);
+                setSelectedTime("");
+
+                // Wyświetl alert
+                window.alert('Dane zostały zapisane.');
+            }
         } catch (error) {
             console.error('Błąd podczas zapisywania danych do Firebase:', error);
         }
     };
-
 
 
     return (
