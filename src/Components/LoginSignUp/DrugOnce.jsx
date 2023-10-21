@@ -141,6 +141,14 @@ const Health = () => {
                         checkedTime: formattedTime,
                     });
                 } else {
+
+                    await addDoc(medicationsRef, {
+                        userId,
+                        medicationName: selectedMedication,
+                        checkedDate: formattedDate,
+                        checkedTime: formattedTime,
+                    })
+
                     // Jeśli lek istnieje, zmniejsz wartość w polu "tabletsCount" o 1
                     lekiSnapshot.forEach(async (lekDoc) => {
                         const lekData = lekDoc.data();
