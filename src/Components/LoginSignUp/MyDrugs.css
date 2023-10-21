@@ -18,7 +18,7 @@ ul li {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgba(192, 192, 192, 0.5); /* Szare tło z 50% przezroczystości */
+    background-color: rgba(245, 245, 245, 0.5);
     padding: 20px;
     border-radius: 10px;
     margin: 0 auto;
@@ -84,14 +84,14 @@ ul li {
 
 .close-button button {
     display: flex;
-    border: none;
+    border: 1px solid #356F90;
     outline: none;
     justify-content: center;
     align-items: center;
     width: 150px;
     height: 40px;
-    background-color: #356F90;
-    color: white;
+    background-color: white;
+    color: #356F90;
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 50px;
@@ -100,7 +100,13 @@ ul li {
     cursor: pointer;
     gap: 30px;
     margin: 20px auto;
-    text-align: center; /* Wyśrodkowanie zawartości */
+    text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.close-button button:hover {
+    border: 1px solid #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #AD4027;
 }
 
 .content.with-background #save-button {
@@ -122,10 +128,6 @@ ul li {
     text-align: center; /* Wyśrodkowanie zawartości */
 }
 
-.close-button button:hover {
-    background-color: #AD4027; /* Kolor przycisku po najechaniu */
-}
-
 .drug-info {
     display: flex;
     align-items: center;
@@ -145,7 +147,6 @@ ul.centered-list {
     text-align: center; /* Wyśrodkuj tekst wewnątrz listy */
     list-style-position: inside; /* Umieść znaki wiodące wewnątrz listy */
 }
-
 
 .centered-list {
     display: flex;

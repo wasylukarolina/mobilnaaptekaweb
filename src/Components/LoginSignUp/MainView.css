@@ -14,7 +14,6 @@
 }
 
 
-
 img {
     margin: 0px 0px;
     width: 40px;
@@ -97,13 +96,13 @@ img {
 
 .logout-button {
     display: flex;
-    border: none;
+    border: 1px solid #356F90;
     outline: none;
     justify-content: center;
     align-items: center;
     width: 220px;
     height: 59px;
-    color: #AD4027;
+    color: #356F90;
     background: white;
     border-radius: 50px;
     font-size: 19px;
@@ -112,9 +111,15 @@ img {
     gap: 30px;
     margin: 20px auto;
     text-align: center; /* Wyśrodkowanie zawartości */
-    margin-top: 400px; /* Umieść na dole */
+    margin-top: 400px; text-align: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+.logout-button:hover {
+    border: 1px solid #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #AD4027;
+}
 .main-view.sidebar-open {
     margin-left: 250px;
 }

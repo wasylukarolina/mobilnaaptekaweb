@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, query, addDoc, where, getDocs, serverTimestamp} from "firebase/firestore";
+import { getFirestore, collection, query, addDoc, where, getDocs, updateDoc} from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
@@ -95,6 +95,7 @@ const Health = () => {
             const userId = auth.currentUser.uid;
             const db = getFirestore(auth.app);
             const medicationsRef = collection(db, 'checkedMedications');
+            const drugsRef = collection(db, 'leki');
 
             // Pobierz nazwę wybranego leku, datę i godzinę
             const selectedMedication = selectedProducts[0];
@@ -123,13 +124,34 @@ const Health = () => {
                 const formattedDate = `${day}/${month}/${year}`;
                 const formattedTime = `${hour}:${minute}`;
 
-                // Dodaj dane do Firebase
-                await addDoc(medicationsRef, {
-                    userId,
-                    medicationName: selectedMedication,
-                    checkedDate: formattedDate,
-                    checkedTime: formattedTime,
-                });
+                // Sprawdź, czy wybrany lek jest już w tabeli "leki" i należy do aktualnie zalogowanego użytkownika
+                const lekiQuery = query(
+                    drugsRef,
+                    where("userId", "==", userId),
+                    where("nazwaProduktu", "==", selectedMedication)
+                );
+                const lekiSnapshot = await getDocs(lekiQuery);
+
+                if (lekiSnapshot.empty) {
+                    // Jeśli lek nie istnieje, dodaj go do tabeli "checkedMedications"
+                    await addDoc(medicationsRef, {
+                        userId,
+                        medicationName: selectedMedication,
+                        checkedDate: formattedDate,
+                        checkedTime: formattedTime,
+                    });
+                } else {
+                    // Jeśli lek istnieje, zmniejsz wartość w polu "tabletsCount" o 1
+                    lekiSnapshot.forEach(async (lekDoc) => {
+                        const lekData = lekDoc.data();
+                        const currentTabletsCount = lekData.tabletsCount > 0 ? lekData.tabletsCount - 1 : 0;
+
+                        // Zaktualizuj pole "tabletsCount" w tabeli "leki"
+                        await updateDoc(lekDoc.ref, {
+                            tabletsCount: currentTabletsCount,
+                        });
+                    });
+                }
 
                 // Zresetuj stan wybranych leków i godziny
                 setSelectedProducts([]);
@@ -142,6 +164,7 @@ const Health = () => {
             console.error('Błąd podczas zapisywania danych do Firebase:', error);
         }
     };
+
 
 
     return (

@@ -4,7 +4,7 @@
     border: 1px solid #ddd;
     background-color: rgba(249, 249, 249, 0.7); /* Użyj rgba() z czwartym parametrem (alpha) ustawionym na 0.7 dla 70% przezroczystości */
     border-radius: 5px;
-    width: 1000px;
+    width: 60%;
     margin: 0 auto;
 }
 
