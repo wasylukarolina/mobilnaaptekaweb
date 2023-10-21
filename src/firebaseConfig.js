@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDHtxvMluda1GvnhxJ0LuVu-2Yp-F69ULY",
-    authDomain: "mobilnaapteka-8dca0.firebaseapp.com",
-    projectId: "mobilnaapteka-8dca0",
-    storageBucket: "mobilnaapteka-8dca0.appspot.com",
-    messagingSenderId: "562080182785",
-    appId: "1:562080182785:web:9ec21e12614710a1498600"
+    apiKey: "AIzaSyCTal6tQAGn1LLhlynyZPORmCmB_H7PQdU",
+    authDomain: "mobilnaapteka2.firebaseapp.com",
+    projectId: "mobilnaapteka2",
+    storageBucket: "mobilnaapteka2.appspot.com",
+    messagingSenderId: "712369556572",
+    appId: "1:712369556572:web:e67a8cc685709d94f0ea99"
 };
 
 // Initialize Firebase
