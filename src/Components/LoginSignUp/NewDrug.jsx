@@ -372,7 +372,7 @@ const NewDrug = () => {
                     </div>
 
                     {
-                        doseCount > 1 && !customDosing && (
+                        doseCount > 1 && customDosing && (
                             <input
                                 type="number"
                                 id="interval"
@@ -382,7 +382,6 @@ const NewDrug = () => {
                             />
                         )
                     }
-
 
 
                     <h3>Godziny dawek:</h3>
