@@ -185,23 +185,19 @@ const MyDrugs = () => {
 
                         <p><strong>Data ważności:</strong> {selectedDrug.dataWaznosci}</p>
                         <p><strong>Liczba tabletek:</strong> {selectedDrug.tabletsCount}</p>
-                        {Array.isArray(selectedDrug.dawkowanie) && selectedDrug.dawkowanie.length > 1 ? (
-                            <div>
-                                <p><strong>Dawkowanie:</strong></p>
-                                <ul className="centered-list">
-                                    {selectedDrug.dawkowanie.map((dawkowanie, index) => (
-                                        <li key={index}>
-                                            <input type="checkbox" id={`checkbox-${index}`} />
-                                            <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                        <div>
+                            <p><strong>Dawkowanie:</strong></p>
+                            <ul className="centered-list">
+                                {selectedDrug.dawkowanie.map((dawkowanie, index) => (
+                                    <li key={index}>
+                                        <input type="checkbox" id={`checkbox-${index}`} />
+                                        <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
 
-                        ) : (
-                            <p style={{ textAlign: "center" }}><strong>Dawkowanie:</strong> {selectedDrug.dawkowanie}</p>
-                        )}
                         <div className="close-button">
                             <button onClick={() => setSelectedDrug(null)}>Zamknij</button>
                         </div>
