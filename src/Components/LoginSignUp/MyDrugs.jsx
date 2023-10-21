@@ -188,12 +188,17 @@ const MyDrugs = () => {
                         {Array.isArray(selectedDrug.dawkowanie) && selectedDrug.dawkowanie.length > 1 ? (
                             <div>
                                 <p><strong>Dawkowanie:</strong></p>
-                                <ul style={{ textAlign: "center" }}>
+                                <ul className="centered-list">
                                     {selectedDrug.dawkowanie.map((dawkowanie, index) => (
-                                        <li key={index}>{dawkowanie}</li>
+                                        <li key={index}>
+                                            <input type="checkbox" id={`checkbox-${index}`} />
+                                            <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
+                                        </li>
                                     ))}
                                 </ul>
                             </div>
+
+
                         ) : (
                             <p style={{ textAlign: "center" }}><strong>Dawkowanie:</strong> {selectedDrug.dawkowanie}</p>
                         )}
