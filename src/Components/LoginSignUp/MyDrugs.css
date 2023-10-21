@@ -13,4 +13,131 @@ ul li {
     padding: 0;
 }
 
-/* Możesz dostosować wygląd elementów listy według własnych preferencji */
+.drug-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(192, 192, 192, 0.5); /* Szare tło z 50% przezroczystości */
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto;
+    width: 60%;
+    border: 1px solid #AD4027;
+    background-clip: padding-box; /* Zapobiegnij rozmyciu tła w obramówce */
+}
+
+.drug-field ul {
+    padding: 0;
+}
+
+.drug-field li {
+    list-style: none;
+    margin: 10px 0; /* Odstęp między elementami listy */
+    text-align: center;
+}
+
+/* Nowe style dla leków na liście */
+.drug-field ul li {
+    transition: background-color 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.drug-field ul li:hover {
+    background-color: white; /* Białe tło po najechaniu */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Cień */
+    border: 1px solid #356F90; /* Niebieskie obramowanie */
+}
+
+
+.drug-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: white;
+    border: 1px solid #356F90; /* Niebieska obramówka */
+    border-radius: 10px; /* Zaokrąglone rogi */
+    padding: 20px;
+    text-align: center;
+}
+
+.modal-content {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.drug-modal h2 {
+    color: #356F90; /* Kolor tytułu */
+}
+
+.close-button button {
+    display: flex;
+    border: none;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 40px;
+    background-color: #356F90;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; /* Wyśrodkowanie zawartości */
+}
+
+.content.with-background #save-button {
+    display: flex;
+    border: none;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #AD4027;
+    background: white;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; /* Wyśrodkowanie zawartości */
+}
+
+.close-button button:hover {
+    background-color: #AD4027; /* Kolor przycisku po najechaniu */
+}
+
+.drug-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: -25px;
+}
+
+
+.drug-info button {
+    display: flex;
+    border: none;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 40px; /* Zmniejszenie szerokości przycisku na potrzeby ikony */
+    height: 40px;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+    margin: 20px 10px 20px 30px; /* Zmniejszenie marginesu z lewej strony i odstępu od tekstu */
+}
+
+
+
+

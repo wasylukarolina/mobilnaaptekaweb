@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import { signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from "../Assets/menu.png";
+import delete_icon from "../Assets/delete.png";
+
 import './MyDrugs.css';
 
 const MyDrugs = () => {
@@ -14,6 +16,8 @@ const MyDrugs = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [userDrugs, setUserDrugs] = useState([]); // Tablica do przechowywania leków użytkownika
     const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [selectedDrug, setSelectedDrug] = useState(null);
+
 
     useEffect(() => {
         const userId = auth.currentUser.uid;
@@ -62,6 +66,64 @@ const MyDrugs = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
+    const handleDrugClick = (drug) => {
+        setSelectedDrug(drug);
+    };
+
+    const handleDeleteDrug = async (drugToDelete) => {
+        if (!drugToDelete) {
+            return;
+        }
+
+        try {
+            const userId = auth.currentUser.uid;
+            const db = getFirestore(auth.app);
+            const lekiRef = collection(db, "leki");
+
+            // Znajdź i usuń lek na podstawie warunków (userId i nazwaProduktu)
+            const q = query(
+                lekiRef,
+                where("userId", "==", userId),
+                where("nazwaProduktu", "==", drugToDelete.nazwaProduktu)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            querySnapshot.forEach(async (doc) => {
+                const userDrug = doc.data();
+                if (userDrug.id === drugToDelete.id) {
+                    await deleteDoc(doc.ref);
+                }
+            });
+
+            // Zamknij modal po usunięciu leku
+            setSelectedDrug(null);
+        } catch (error) {
+            console.error("Błąd podczas usuwania leku z bazy danych:", error);
+        }
+    };
+
+// Dodaj useEffect do ponownego pobierania danych z bazy po zmianie stanu
+    useEffect(() => {
+        const userId = auth.currentUser.uid;
+        const db = getFirestore(auth.app);
+        const lekiRef = collection(db, "leki");
+
+        const userDrugsQuery = query(lekiRef, where("userId", "==", userId));
+
+        getDocs(userDrugsQuery)
+            .then((querySnapshot) => {
+                const drugs = [];
+                querySnapshot.forEach((doc) => {
+                    drugs.push(doc.data());
+                });
+                setUserDrugs(drugs);
+            })
+            .catch((error) => {
+                console.error("Błąd podczas pobierania leków z Firestore:", error);
+            });
+    }, [selectedDrug]);
+
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
             <div className="sidebar">
@@ -84,24 +146,64 @@ const MyDrugs = () => {
                 <img src={menu_icon} alt="" />
             </button>
 
-            <div className="content">
+            <div className="content with-background">
                 <h1>Moje leki</h1>
-                <ul>
-                    {userDrugs.map((drug, index) => (
-                        <li
-                            key={index}
-                            onMouseEnter={() => setHoveredIndex(index)}
-                            onMouseLeave={() => setHoveredIndex(null)}
-                            className={index === hoveredIndex ? "hovered" : ""}
-                        >
-                            <strong>Nazwa leku:</strong> {drug.nazwaProduktu}
-                            <br />
-                            <strong>Data ważności:</strong> {drug.dataWaznosci}
-                            <br />
-                            {/* Dodaj inne informacje o leku, jeśli potrzebujesz */}
-                        </li>
-                    ))}
-                </ul>
+                <div className="drug-field">
+                    <ul>
+                        {userDrugs.map((drug, index) => (
+                            <li
+                                key={index}
+                                onMouseEnter={() => setHoveredIndex(index)}
+                                onMouseLeave={() => setHoveredIndex(null)}
+                                className={index === hoveredIndex ? "hovered" : ""}
+                                onClick={() => handleDrugClick(drug)}
+                            >
+                                <strong>Nazwa leku:</strong> {drug.nazwaProduktu}
+                                <br />
+                                <strong>Data ważności:</strong> {drug.dataWaznosci}
+                            </li>
+
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Wyświetlanie modala z informacjami o leku */}
+                {selectedDrug && (
+                    <div className="drug-modal">
+                        <h2>Informacje o leku</h2>
+                        <div className="drug-info">
+                            <p>
+                                <strong>Nazwa leku:</strong> {selectedDrug.nazwaProduktu}
+                            </p>
+
+                            <button
+                                onClick={() => handleDeleteDrug(selectedDrug)}
+                            >
+                                <img src={delete_icon} alt="" />
+                            </button>
+                        </div>
+
+                        <p><strong>Data ważności:</strong> {selectedDrug.dataWaznosci}</p>
+                        <p><strong>Liczba tabletek:</strong> {selectedDrug.tabletsCount}</p>
+                        {Array.isArray(selectedDrug.dawkowanie) && selectedDrug.dawkowanie.length > 1 ? (
+                            <div>
+                                <p><strong>Dawkowanie:</strong></p>
+                                <ul style={{ textAlign: "center" }}>
+                                    {selectedDrug.dawkowanie.map((dawkowanie, index) => (
+                                        <li key={index}>{dawkowanie}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <p style={{ textAlign: "center" }}><strong>Dawkowanie:</strong> {selectedDrug.dawkowanie}</p>
+                        )}
+                        <div className="close-button">
+                            <button onClick={() => setSelectedDrug(null)}>Zamknij</button>
+                        </div>
+
+                    </div>
+                )}
+
             </div>
         </div>
     );

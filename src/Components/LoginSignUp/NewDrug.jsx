@@ -289,14 +289,21 @@ const NewDrug = () => {
                             type="text"
                             placeholder="Wyszukaj lub wybierz lek"
                             value={selectedProducts[0] || ""}
-                            onChange={(e) => setSelectedProducts([e.target.value])}
+                            onChange={(e) => {
+                                const text = e.target.value;
+                                setSelectedProducts([text]); // Zaktualizuj wybrany lek
+                                handleFilterChange(text); // Obsłuż filtrowanie leków na podstawie wprowadzonego tekstu
+                            }}
                         />
                     </div>
 
                     <div className="product-list">
                         {filteredProductNames.length > 0 && (
                             <select
-                                multiple value={selectedProducts} onChange={handleProductSelect}>
+                                multiple
+                                value={selectedProducts}
+                                onChange={handleProductSelect}
+                            >
                                 {filteredProductNames.map((productInfo, index) => (
                                     <option key={index} value={productInfo}>
                                         {productInfo}
