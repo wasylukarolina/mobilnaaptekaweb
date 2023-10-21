@@ -1,0 +1,13 @@
+.health{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(192, 192, 192, 0.5); /* Szare tło z 50% przezroczystości */
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto;
+    width: 60%;
+    border: 1px solid #AD4027;
+    background-clip: padding-box; /* Zapobiegnij rozmyciu tła w obramówce */
+}
