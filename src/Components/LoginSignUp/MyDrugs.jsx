@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs, deleteDoc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, deleteDoc, addDoc, updateDoc  } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import { signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
@@ -126,11 +126,39 @@ const MyDrugs = () => {
             const updatedIsChecked = { ...isChecked };
             updatedIsChecked[drug.nazwaProduktu] = !updatedIsChecked[drug.nazwaProduktu];
             setIsChecked(updatedIsChecked);
+
+            // Zmniejsz lub zwiększ wartość w polu "tabletsCount"
+            const tabletsChange = updatedIsChecked[drug.nazwaProduktu] ? -1 : 1;
+            const newTabletsCount = drug.tabletsCount + tabletsChange;
+
+            // Opcjonalnie: upewnij się, że nowa liczba tabletek nie jest ujemna
+            const nonNegativeTabletsCount = Math.max(newTabletsCount, 0);
+
+            // Pobierz odpowiedni dokument leku
+            const lekQuery = query(
+                lekiRef,
+                where("userId", "==", userId),
+                where("nazwaProduktu", "==", drug.nazwaProduktu)
+            );
+
+            const lekQuerySnapshot = await getDocs(lekQuery);
+            const lekDoc = lekQuerySnapshot.docs[0]; // Załóżmy, że istnieje tylko jeden pasujący dokument
+
+            // Zaktualizuj pole "tabletsCount" w tabeli "leki" przy użyciu updateDoc
+            await updateDoc(lekDoc.ref, {
+                tabletsCount: nonNegativeTabletsCount
+            });
+
+            // Aktualizuj pole "Liczba tabletek" w stanie selectedDrug
+            const updatedSelectedDrug = { ...selectedDrug };
+            updatedSelectedDrug.tabletsCount = nonNegativeTabletsCount;
+            setSelectedDrug(updatedSelectedDrug);
+
+
         } catch (error) {
             console.error("Błąd podczas dodawania lub usuwania zaznaczonego leku:", error);
         }
     };
-
     const fetchDataFromFirebase = async () => {
         try {
             // Pobierz dane leków użytkownika
