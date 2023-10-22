@@ -62,13 +62,30 @@ const MyDrugs = () => {
                 const lekData = lekDoc.data();
                 drug.tabletsCount = lekData.tabletsCount;
             }
+
+            const checkedMedsQuery = query(
+                checkedMedicationsRef,
+                where("userId", "==", userId),
+                where("checkedDate", "==", formattedDate),
+                where("medicationName", "==", drug.nazwaProduktu)
+            );
+
+            const checkedMedsSnapshot = await getDocs(checkedMedsQuery);
+
+            const updatedIsChecked = { ...isChecked };
+            checkedMedsSnapshot.forEach((doc) => {
+                const data = doc.data();
+                const doseKey = `dose-${data.medicationName}-${data.checkedTime.replace(":", "_")}`;
+                updatedIsChecked[doseKey] = true;
+            });
+
+            setIsChecked(updatedIsChecked);
+
+            setSelectedDrug(drug);
         } catch (error) {
             console.error("Błąd podczas pobierania danych leku z bazy danych:", error);
         }
-
-        setSelectedDrug(drug);
     };
-
 
     const handleDeleteDrug = async (drugToDelete) => {
         if (!drugToDelete) {
