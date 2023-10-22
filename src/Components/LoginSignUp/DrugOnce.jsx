@@ -59,7 +59,6 @@ const Health = () => {
     }, []);
 
 
-
     const handleLogout = async () => {
         try {
             await signOut(auth);
