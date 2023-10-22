@@ -19,6 +19,7 @@ const MyDrugs = () => {
     const [selectedTime, setSelectedTime] = useState("");
     const [isChecked, setIsChecked] = useState({}); // Zmieniono na obiekt
 
+
     const currentDate = new Date();
     const day = currentDate.getDate();
     const month = currentDate.getMonth() + 1;
@@ -29,6 +30,7 @@ const MyDrugs = () => {
     const userId = auth.currentUser.uid;
     const lekiRef = collection(db, "leki");
     const checkedMedicationsRef = collection(db, "checkedMedications");
+
 
 
 
@@ -45,9 +47,28 @@ const MyDrugs = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
-    const handleDrugClick = (drug) => {
+    const handleDrugClick = async (drug) => {
+        // Pobierz aktualną wartość tabletsCount z bazy danych za każdym razem, gdy otwierany jest modal
+        try {
+            const lekQuery = query(
+                lekiRef,
+                where("userId", "==", userId),
+                where("nazwaProduktu", "==", drug.nazwaProduktu)
+            );
+            const lekQuerySnapshot = await getDocs(lekQuery);
+            const lekDoc = lekQuerySnapshot.docs[0]; // Załóżmy, że istnieje tylko jeden pasujący dokument
+
+            if (lekDoc.exists()) {
+                const lekData = lekDoc.data();
+                drug.tabletsCount = lekData.tabletsCount;
+            }
+        } catch (error) {
+            console.error("Błąd podczas pobierania danych leku z bazy danych:", error);
+        }
+
         setSelectedDrug(drug);
     };
+
 
     const handleDeleteDrug = async (drugToDelete) => {
         if (!drugToDelete) {
@@ -63,6 +84,7 @@ const MyDrugs = () => {
 
             // Zamknij modal po usunięciu leku
             setSelectedDrug(null);
+
 
             // Usuń lek z bazy danych
             await deleteDoc(query(
@@ -80,55 +102,52 @@ const MyDrugs = () => {
         }
     };
 
-    const handleCheckboxChange = async (drug, index, selectedTime) => {
+    const handleCheckboxChange = async (drug, doseKey) => {
         try {
             const currentDate = new Date();
-            const selectedDate = new Date(currentDate);
             const currentHour = currentDate.getHours();
-            const selectedHourInt = parseInt(selectedTime.split(":")[0], 10);
 
-            const day = selectedDate.getDate();
-            const month = selectedDate.getMonth() + 1;
-            const year = selectedDate.getFullYear();
-            const hour = selectedHourInt;
-            const minute = parseInt(selectedTime.split(":")[1], 10);
+            // Odczytaj godzinę z `doseKey`
+            const selectedTime = doseKey.split("-")[2].replace("_", ":");
+
+            const day = currentDate.getDate();
+            const month = currentDate.getMonth() + 1;
+            const year = currentDate.getFullYear();
             const formattedDate = `${day}/${month}/${year}`;
 
-            const time = drug.dawkowanie[index];
+            // Sprawdź, czy dokument istnieje w bazie danych
+            const existingDocQuery = query(
+                checkedMedicationsRef,
+                where("userId", "==", userId),
+                where("medicationName", "==", drug.nazwaProduktu),
+                where("checkedDate", "==", formattedDate),
+                where("checkedTime", "==", selectedTime)
+            );
 
-            if (time && parseInt(time.split(":")[0], 10) > currentHour) {
-                const existingDocQuery = query(
-                    checkedMedicationsRef,
-                    where("userId", "==", userId),
-                    where("medicationName", "==", drug.nazwaProduktu),
-                    where("checkedDate", "==", formattedDate),
-                    where("checkedTime", "==", time)
-                );
-                const existingDocSnapshot = await getDocs(existingDocQuery);
+            const existingDocSnapshot = await getDocs(existingDocQuery);
 
-                console.log("existingDocSnapshot.size: ", existingDocSnapshot.size);
-
-                if (existingDocSnapshot.size === 0) {
-                    await addDoc(checkedMedicationsRef, {
-                        userId,
-                        medicationName: drug.nazwaProduktu,
-                        checkedDate: formattedDate,
-                        checkedTime: time,
-                    });
-                } else {
-                    existingDocSnapshot.forEach(async (doc) => {
-                        await deleteDoc(doc.ref);
-                    });
-                }
+            if (existingDocSnapshot.size === 0) {
+                // Dodaj dokument, jeśli nie istnieje
+                await addDoc(checkedMedicationsRef, {
+                    userId,
+                    medicationName: drug.nazwaProduktu,
+                    checkedDate: formattedDate,
+                    checkedTime: selectedTime,
+                });
+            } else {
+                // Usuń dokument, jeśli istnieje
+                existingDocSnapshot.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
             }
 
             // Zaktualizuj stan checkboxa lokalnie
             const updatedIsChecked = { ...isChecked };
-            updatedIsChecked[drug.nazwaProduktu] = !updatedIsChecked[drug.nazwaProduktu];
+            updatedIsChecked[doseKey] = !updatedIsChecked[doseKey];
             setIsChecked(updatedIsChecked);
 
             // Zmniejsz lub zwiększ wartość w polu "tabletsCount"
-            const tabletsChange = updatedIsChecked[drug.nazwaProduktu] ? -1 : 1;
+            const tabletsChange = updatedIsChecked[doseKey] ? -1 : 1;
             const newTabletsCount = drug.tabletsCount + tabletsChange;
 
             // Opcjonalnie: upewnij się, że nowa liczba tabletek nie jest ujemna
@@ -146,19 +165,19 @@ const MyDrugs = () => {
 
             // Zaktualizuj pole "tabletsCount" w tabeli "leki" przy użyciu updateDoc
             await updateDoc(lekDoc.ref, {
-                tabletsCount: nonNegativeTabletsCount
+                tabletsCount: nonNegativeTabletsCount,
             });
 
             // Aktualizuj pole "Liczba tabletek" w stanie selectedDrug
             const updatedSelectedDrug = { ...selectedDrug };
             updatedSelectedDrug.tabletsCount = nonNegativeTabletsCount;
             setSelectedDrug(updatedSelectedDrug);
-
-
         } catch (error) {
             console.error("Błąd podczas dodawania lub usuwania zaznaczonego leku:", error);
         }
     };
+
+
     const fetchDataFromFirebase = async () => {
         try {
             // Pobierz dane leków użytkownika
@@ -252,19 +271,22 @@ const MyDrugs = () => {
                         <div>
                             <p><strong>Dawkowanie:</strong></p>
                             <ul className="centered-list">
-                                {selectedDrug.dawkowanie.map((dawkowanie, index) => (
-                                    <li key={index}>
-                                        <input
-                                            type="checkbox"
-                                            id={`checkbox-${index}`}
-                                            // Sprawdzasz wartość isChecked dla danego leku
-                                            checked={isChecked[selectedDrug.nazwaProduktu] || false}
-                                            onChange={() => handleCheckboxChange(selectedDrug, index, selectedTime)}
-                                        />
-                                        <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
-                                    </li>
-                                ))}
+                                {selectedDrug.dawkowanie.map((dawkowanie, index) => {
+                                    const doseKey = `dose-${selectedDrug.nazwaProduktu}-${dawkowanie.replace(":", "_")}`;
+                                    return (
+                                        <li key={index}>
+                                            <input
+                                                type="checkbox"
+                                                id={`checkbox-${index}`}
+                                                checked={isChecked[doseKey] || false}
+                                                onChange={() => handleCheckboxChange(selectedDrug, doseKey)}
+                                            />
+                                            <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
+                                        </li>
+                                    );
+                                })}
                             </ul>
+
                         </div>
 
                         <div className="close-button">
