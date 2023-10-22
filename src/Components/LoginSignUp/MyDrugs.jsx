@@ -161,7 +161,6 @@ const MyDrugs = () => {
         fetchDataFromFirebase();
     }, []);
 
-    console.log("isChecked: ", isChecked);
 
 
     return (
