@@ -13,71 +13,24 @@ import './MyDrugs.css';
 const MyDrugs = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const [userDrugs, setUserDrugs] = useState([]); // Tablica do przechowywania leków użytkownika
+    const [userDrugs, setUserDrugs] = useState([]);
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [selectedDrug, setSelectedDrug] = useState(null);
-    const [selectedTime, setSelectedTime] = useState(""); // Define selectedTime in state
-    const [isChecked, setIsChecked] = useState([]); // Tablica do przechowywania stanu checkboxów
+    const [selectedTime, setSelectedTime] = useState("");
+    const [isChecked, setIsChecked] = useState({}); // Zmieniono na obiekt
+
     const currentDate = new Date();
-
-
     const day = currentDate.getDate();
     const month = currentDate.getMonth() + 1;
     const year = currentDate.getFullYear();
     const formattedDate = `${day}/${month}/${year}`;
 
-
-    useEffect(() => {
-        const userId = auth.currentUser.uid;
-        const db = getFirestore(auth.app);
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("userId", "==", userId));
-        const checkedMedicationsRef = collection(db, "checkedMedications");
-
-        const day = currentDate.getDate();
-        const month = currentDate.getMonth() + 1;
-        const year = currentDate.getFullYear();
-        const formattedDate = `${day}/${month}/${year}`;
+    const db = getFirestore(auth.app);
+    const userId = auth.currentUser.uid;
+    const lekiRef = collection(db, "leki");
+    const checkedMedicationsRef = collection(db, "checkedMedications");
 
 
-        const checkCheckedMedications = async () => {
-            try {
-                const userId = auth.currentUser.uid;
-                const db = getFirestore(auth.app);
-                const checkedMedicationsRef = collection(db, "checkedMedications");
-                const currentDate = new Date();
-                const day = currentDate.getDate();
-                const month = currentDate.getMonth() + 1;
-                const year = currentDate.getFullYear();
-                const formattedDate = `${day}/${month}/${year}`;
-
-                const promises = userDrugs.map(async (drug) => {
-                    const checkedTimes = [];
-                    for (const time of drug.dawkowanie) {
-                        const timeQuery = query(
-                            checkedMedicationsRef,
-                            where("userId", "==", userId),
-                            where("medicationName", "==", drug.nazwaProduktu),
-                            where("checkedDate", "==", formattedDate),
-                            where("checkedTime", "==", time)
-                        );
-                        const timeQuerySnapshot = await getDocs(timeQuery);
-
-                        checkedTimes.push(timeQuerySnapshot.size > 0); // Sprawdź, czy wynik zapytania jest większy niż 0
-                    }
-                    return checkedTimes.includes(true);
-                });
-
-                const results = await Promise.all(promises);
-                setIsChecked(results);
-            } catch (error) {
-                console.error("Błąd podczas sprawdzania danych z Firestore:", error);
-            }
-        };
-
-        checkCheckedMedications();
-
-    }, [userDrugs]);
 
     const handleLogout = async () => {
         try {
@@ -102,64 +55,33 @@ const MyDrugs = () => {
         }
 
         try {
-            const userId = auth.currentUser.uid;
-            const db = getFirestore(auth.app);
-            const lekiRef = collection(db, "leki");
-
-            // Znajdź i usuń lek na podstawie warunków (userId i nazwaProduktu)
-            const q = query(
-                lekiRef,
-                where("userId", "==", userId),
-                where("nazwaProduktu", "==", drugToDelete.nazwaProduktu)
-            );
-
-            const querySnapshot = await getDocs(q);
-
-            querySnapshot.forEach(async (doc) => {
-                const userDrug = doc.data();
-                if (userDrug.id === drugToDelete.id) {
-                    await deleteDoc(doc.ref);
-                }
-            });
-
-            // Usunięcie leku z listy userDrugs
-            const updatedUserDrugs = userDrugs.filter((drug) => drug.id !== drugToDelete.id);
+            // Usuń lek bez konieczności odczytu z bazy danych
+            const indexToRemove = userDrugs.findIndex((drug) => drug.id === drugToDelete.id);
+            const updatedUserDrugs = [...userDrugs];
+            updatedUserDrugs.splice(indexToRemove, 1);
             setUserDrugs(updatedUserDrugs);
 
             // Zamknij modal po usunięciu leku
             setSelectedDrug(null);
+
+            // Usuń lek z bazy danych
+            await deleteDoc(query(
+                lekiRef,
+                where("userId", "==", userId),
+                where("nazwaProduktu", "==", drugToDelete.nazwaProduktu)
+            ));
+
+            // Odznacz checkboxy
+            const updatedIsChecked = { ...isChecked };
+            updatedIsChecked[drugToDelete.nazwaProduktu] = false;
+            setIsChecked(updatedIsChecked);
         } catch (error) {
             console.error("Błąd podczas usuwania leku z bazy danych:", error);
         }
     };
 
-// Dodaj useEffect do ponownego pobierania danych z bazy po zmianie stanu
-    useEffect(() => {
-        const userId = auth.currentUser.uid;
-        const db = getFirestore(auth.app);
-        const lekiRef = collection(db, "leki");
-
-        const userDrugsQuery = query(lekiRef, where("userId", "==", userId));
-
-        getDocs(userDrugsQuery)
-            .then((querySnapshot) => {
-                const drugs = [];
-                querySnapshot.forEach((doc) => {
-                    drugs.push(doc.data());
-                });
-                setUserDrugs(drugs);
-            })
-            .catch((error) => {
-                console.error("Błąd podczas pobierania leków z Firestore:", error);
-            });
-    }, [selectedDrug]);
-
     const handleCheckboxChange = async (drug, index, selectedTime) => {
         try {
-            const userId = auth.currentUser.uid;
-            const db = getFirestore(auth.app);
-            const checkedMedicationsRef = collection(db, "checkedMedications");
-
             const currentDate = new Date();
             const selectedDate = new Date(currentDate);
             const currentHour = currentDate.getHours();
@@ -172,7 +94,6 @@ const MyDrugs = () => {
             const minute = parseInt(selectedTime.split(":")[1], 10);
             const formattedDate = `${day}/${month}/${year}`;
 
-            // Znajdź wybrany czas dla danego leku
             const time = drug.dawkowanie[index];
 
             if (time && parseInt(time.split(":")[0], 10) > currentHour) {
@@ -183,11 +104,11 @@ const MyDrugs = () => {
                     where("checkedDate", "==", formattedDate),
                     where("checkedTime", "==", time)
                 );
-
                 const existingDocSnapshot = await getDocs(existingDocQuery);
 
+                console.log("existingDocSnapshot.size: ", existingDocSnapshot.size);
+
                 if (existingDocSnapshot.size === 0) {
-                    // Dodaj informacje o zaznaczonym leku do tabeli "checkedMedications"
                     await addDoc(checkedMedicationsRef, {
                         userId,
                         medicationName: drug.nazwaProduktu,
@@ -195,16 +116,52 @@ const MyDrugs = () => {
                         checkedTime: time,
                     });
                 } else {
-                    // Usuń dokument z tabeli "checkedMedications", jeśli istnieje
                     existingDocSnapshot.forEach(async (doc) => {
                         await deleteDoc(doc.ref);
                     });
                 }
             }
+
+            // Zaktualizuj stan checkboxa lokalnie
+            const updatedIsChecked = { ...isChecked };
+            updatedIsChecked[drug.nazwaProduktu] = !updatedIsChecked[drug.nazwaProduktu];
+            setIsChecked(updatedIsChecked);
         } catch (error) {
             console.error("Błąd podczas dodawania lub usuwania zaznaczonego leku:", error);
         }
     };
+
+    const fetchDataFromFirebase = async () => {
+        try {
+            // Pobierz dane leków użytkownika
+            const userDrugsQuery = query(lekiRef, where("userId", "==", userId));
+            const querySnapshot = await getDocs(userDrugsQuery);
+            const drugs = querySnapshot.docs.map((doc) => doc.data());
+            setUserDrugs(drugs);
+
+            // Pobierz dane o zaznaczonych lekach
+            const checkedMedsQuery = query(
+                checkedMedicationsRef,
+                where("userId", "==", userId),
+                where("checkedDate", "==", formattedDate)
+            );
+            const checkedMedsSnapshot = await getDocs(checkedMedsQuery);
+            const checkedMedsData = {};
+            checkedMedsSnapshot.forEach((doc) => {
+                const data = doc.data();
+                checkedMedsData[data.medicationName] = true;
+            });
+            setIsChecked(checkedMedsData);
+        } catch (error) {
+            console.error("Błąd podczas pobierania danych z Firebase:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchDataFromFirebase();
+    }, []);
+
+    console.log("isChecked: ", isChecked);
 
 
     return (
@@ -258,7 +215,6 @@ const MyDrugs = () => {
                             <p>
                                 <strong>Nazwa leku:</strong> {selectedDrug.nazwaProduktu}
                             </p>
-
                             <button onClick={() => handleDeleteDrug(selectedDrug)}>
                                 <img src={delete_icon} alt="" />
                             </button>
@@ -274,9 +230,10 @@ const MyDrugs = () => {
                                         <input
                                             type="checkbox"
                                             id={`checkbox-${index}`}
+                                            // Sprawdzasz wartość isChecked dla danego leku
+                                            checked={isChecked[selectedDrug.nazwaProduktu] || false}
                                             onChange={() => handleCheckboxChange(selectedDrug, index, selectedTime)}
                                         />
-
                                         <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
                                     </li>
                                 ))}
