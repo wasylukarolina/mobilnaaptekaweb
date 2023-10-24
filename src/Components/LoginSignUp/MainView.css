@@ -6,13 +6,6 @@
     height: 100vh; /* Wysokość na 100% wysokości widoku (viewport height) */
 }
 
-.with-background {
-    background-image: url('../Assets/logo.png');
-    background-size: 800px 800px; /* Dostosuj rozmiar obrazu */
-    background-repeat: no-repeat;
-    background-position: right -70px bottom -80px; /* Przesunięcie w prawo i w dół */
-}
-
 
 img {
     margin: 0px 0px;
@@ -57,29 +50,27 @@ img {
     color: white;
 }
 
+.sidebar a {
+    font-size: 18px;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s; /* Dodaj przejścia */
+    margin-bottom: 10px; /* Dodaj odstęp między elementami */
+}
+
+.sidebar a:hover {
+    transform: scale(1.1); /* Powiększenie tekstu o 10% */
+    font-weight: bold; /* Ustawienie tekstu jako pogrubiony */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Dodaj cień do tekstu */
+}
 
 
 .centered-content {
     display: flex;
     flex-direction: column;
     align-items: center; /* Wyśrodkowanie w pionie */
+    justify-content: center; /* Wyśrodkowanie w poziomie */
     height: 100%; /* Rozciągnięcie zawartości na całą wysokość sidebaru */
-}
-
-.centered-content a {
-    font-size: 18px;
-    text-decoration: none;
-    color: white;
-    margin-bottom: 20px; /* Dodaj odstęp na dole linków */
-    transition: color 0.3s; /* Dodaj płynne przejście dla zmiany koloru tekstu */
-}
-
-.centered-content a:hover {
-    font-size: 20px;
-    text-decoration: none;
-    font-weight: bold;
-    color: white;
-    text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.8);
 }
 
 .centered-content h2 {
@@ -96,30 +87,23 @@ img {
 
 .logout-button {
     display: flex;
-    border: 1px solid #356F90;
+    border: none;
     outline: none;
     justify-content: center;
     align-items: center;
     width: 220px;
     height: 59px;
-    color: #356F90;
+    color: #AD4027;
     background: white;
     border-radius: 50px;
     font-size: 19px;
     font-weight: 700;
     cursor: pointer;
     gap: 30px;
-    margin: 20px auto;
     text-align: center; /* Wyśrodkowanie zawartości */
-    margin-top: 400px; text-align: center;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    margin-top: 400px; /* Umieść na dole */
 }
 
-.logout-button:hover {
-    border: 1px solid #AD4027;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    color: #AD4027;
-}
 .main-view.sidebar-open {
     margin-left: 250px;
 }
