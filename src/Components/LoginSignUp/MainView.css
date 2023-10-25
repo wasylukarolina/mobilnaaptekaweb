@@ -1,0 +1,135 @@
+/* MainView.css */
+/* MainView.css */
+
+.main-view {
+    background: white;
+    height: 100vh; /* Wysokość na 100% wysokości widoku (viewport height) */
+}
+
+.with-background {
+    background-image: url('../Assets/logo.png');
+    background-size: 800px 800px; /* Dostosuj rozmiar obrazu */
+    background-repeat: no-repeat;
+    background-position: right -70px bottom -80px; /* Przesunięcie w prawo i w dół */
+}
+
+
+img {
+    margin: 0px 0px;
+    width: 40px;
+    height: 40px;
+}
+
+.main-view {
+    display: flex;
+    align-items: stretch;
+    transition: margin-left 0.5s;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 10px;
+    z-index: 2;
+    transition: left 0.5s; /* Dodaj przejście dla przycisku */
+    background: none; /* Usuń tło */
+    border: none; /* Usuń obramowanie */
+    padding: 0; /* Usuń wewnętrzny odstęp */
+}
+
+.sidebar-toggle.left {
+    left: 0px;
+}
+
+.sidebar-toggle.right {
+    left: 250px;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    background: linear-gradient(#356F90, #AD4027);
+    transition: 0.5s;
+    overflow-x: hidden;
+    padding-top: 20px;
+    color: white;
+}
+
+
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Wyśrodkowanie w pionie */
+    height: 100%; /* Rozciągnięcie zawartości na całą wysokość sidebaru */
+}
+
+.centered-content a {
+    font-size: 18px;
+    text-decoration: none;
+    color: white;
+    margin-bottom: 20px; /* Dodaj odstęp na dole linków */
+    transition: color 0.3s; /* Dodaj płynne przejście dla zmiany koloru tekstu */
+}
+
+.centered-content a:hover {
+    font-size: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.8);
+}
+
+.centered-content h2 {
+    font-size: 24px;
+    margin-top: 80px;
+}
+
+.centered-content a {
+    font-size: 18px;
+    text-decoration: none;
+    color: white;
+}
+
+
+.logout-button {
+    display: flex;
+    border: 1px solid #356F90;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #356F90;
+    background: white;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; /* Wyśrodkowanie zawartości */
+    margin-top: 400px; text-align: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.logout-button:hover {
+    border: 1px solid #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #AD4027;
+}
+.main-view.sidebar-open {
+    margin-left: 250px;
+}
+
+.sidebar-open .sidebar {
+    left: 0;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+}
