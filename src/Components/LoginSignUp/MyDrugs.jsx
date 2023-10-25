@@ -287,22 +287,44 @@ const MyDrugs = () => {
                         <p><strong>Liczba tabletek:</strong> {selectedDrug.tabletsCount}</p>
                         <div>
                             <p><strong>Dawkowanie:</strong></p>
+
                             <ul className="centered-list">
                                 {selectedDrug.dawkowanie.map((dawkowanie, index) => {
                                     const doseKey = `dose-${selectedDrug.nazwaProduktu}-${dawkowanie.replace(":", "_")}`;
                                     return (
-                                        <li key={index}>
-                                            <input
-                                                type="checkbox"
-                                                id={`checkbox-${index}`}
-                                                checked={isChecked[doseKey] || false}
-                                                onChange={() => handleCheckboxChange(selectedDrug, doseKey)}
-                                            />
-                                            <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
+                                        <li key={index} className="checkbox-slider-container">
+                                            <div className="checkbox-slider">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`checkbox-${index}`}
+                                                    checked={isChecked[doseKey] || false}
+                                                    onChange={() => handleCheckboxChange(selectedDrug, doseKey)}
+                                                />
+                                                <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
+                                            </div>
+                                            <div className="slider-controls">
+                                                <input
+                                                    type="range"
+                                                    min="0.25"
+                                                    max="2"
+                                                    step="0.25"
+                                                    value={isChecked[doseKey] || 0}
+                                                    onChange={(e) => {
+                                                        const newValue = parseFloat(e.target.value);
+                                                        const updatedIsChecked = { ...isChecked };
+                                                        updatedIsChecked[doseKey] = newValue;
+                                                        setIsChecked(updatedIsChecked);
+                                                    }}
+                                                />
+                                                <span className="slider-value">
+            {isChecked[doseKey] ? `${isChecked[doseKey]}x` : '0x'}
+          </span>
+                                            </div>
                                         </li>
                                     );
                                 })}
                             </ul>
+
 
                         </div>
 
