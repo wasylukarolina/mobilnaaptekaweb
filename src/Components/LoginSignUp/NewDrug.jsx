@@ -367,18 +367,6 @@ const NewDrug = () => {
                         </div>
                     </div>
 
-                    {
-                        doseCount > 1 && customDosing && (
-                            <input
-                                type="number"
-                                id="interval"
-                                placeholder="Liczba godzin między dawkami"
-                                value={interval}
-                                onChange={(e) => setInterval(parseInt(e.target.value, 10))}
-                            />
-                        )
-                    }
-
                     <h3>Godziny dawek:</h3>
                     <div className="dose-times">
                         {renderDoseTimeFields()}
