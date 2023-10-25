@@ -78,7 +78,7 @@
 
 .product-list select {
     width: 100%;
-    height: 40px; /* Ustaw wysokość na 40 pikseli */
+    height: 90px; /* Ustaw wysokość na 90 pikseli */
     border: none;
     background-color: transparent;
     padding: 10px;
