@@ -219,17 +219,30 @@ const NewDrug = () => {
             }
     };
 
+    const addDoseTime = () => {
+        // Dodaj nową godzinę do stanu doseTimes
+        const newDoseTimes = [...doseTimes, ""];
+        setDoseTimes(newDoseTimes);
+    };
+
+
     const renderDoseTimeFields = () => {
         if (customDosing) {
             return doseCount > 0 ? (
-                Array.from({ length: doseCount }).map((_, index) => (
-                    <input
-                        key={index}
-                        type="time"
-                        value={doseTimes[index] || ""}
-                        onChange={(e) => handleDoseTimeChange(e, index)}
-                    />
-                ))
+                <>
+                    {doseTimes.map((doseTime, index) => (
+                        <div key={index} className="dose-time-field">
+                            <input
+                                type="time"
+                                value={doseTime || ""}
+                                onChange={(e) => handleDoseTimeChange(e, index)}
+                            />
+                        </div>
+                    ))}
+                    {customDosing && (
+                        <button onClick={addDoseTime}>DODAJ</button>
+                    )}
+                </>
             ) : null;
         } else if (!customDosing && doseCount > 1) {
             return (
@@ -258,7 +271,6 @@ const NewDrug = () => {
             );
         }
     };
-
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
@@ -340,32 +352,39 @@ const NewDrug = () => {
                     </div>
 
                     <div className="labels">
-                        <h3>Liczba dawkowań:</h3>
                         <h3>Niestandardowe dawkowanie:</h3>
-                    </div>
 
-                    <div className="dose-count custom-dosing-container">
-                        <div className="dose-count-field">
-                            <select
-                                value={doseCount}
-                                onChange={handleDoseCountChange}
-                            >
-                                <option value="">Liczba dawkowań</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                            </select>
+                        <div className="dose-count custom-dosing-container">
+                            <div className="custom-dosing-field">
+                                <input
+                                    type="checkbox"
+                                    checked={customDosing}
+                                    onChange={handleCustomDosingChange}
+                                />
+                            </div>
                         </div>
 
-                        <div className="custom-dosing-field">
-                            <input
-                                type="checkbox"
-                                checked={customDosing}
-                                onChange={handleCustomDosingChange}
-                            />
-                        </div>
+                        {customDosing ? ( null
+
+                        ) : (
+                            <div className="dose-count custom-dosing-container">
+                                <div className="dose-count-field">
+                                    <select
+                                        value={doseCount}
+                                        onChange={handleDoseCountChange}
+                                    >
+                                        <option value="">Liczba dawkowań</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        )}
                     </div>
+
+
 
                     <h3>Godziny dawek:</h3>
                     <div className="dose-times">
