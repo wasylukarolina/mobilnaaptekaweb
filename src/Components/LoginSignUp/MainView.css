@@ -6,6 +6,13 @@
     height: 100vh; /* Wysokość na 100% wysokości widoku (viewport height) */
 }
 
+.with-background {
+    background-image: url('../Assets/logo.png');
+    background-size: 800px 800px; /* Dostosuj rozmiar obrazu */
+    background-repeat: no-repeat;
+    background-position: right -70px bottom -80px; /* Przesunięcie w prawo i w dół */
+}
+
 
 img {
     margin: 0px 0px;
