@@ -23,8 +23,9 @@ const NewDrug = () => {
     const [doseTimes, setDoseTimes] = useState([]); // Nowe pole godzin dawek
     const [customDosing, setCustomDosing] = useState(false); // Nowe pole
     const [interval, setInterval] = useState(0); // Domyślnie ustaw na 0
-    const [tabletsCount, setTabletsCount] = useState("");
+    const [pojemnosc, setPojemnosc] = useState("");
     const [isDuplicateDrug, setIsDuplicateDrug] = useState(false);
+    const [iloscTabletekJednorazowo, setIloscTabletekJednorazowo] = useState(1); // Domyślna wartość suwaka
 
 
 
@@ -134,7 +135,7 @@ const NewDrug = () => {
         if (
             !selectedProductNames[0] ||
             !expiryDate ||
-            !tabletsCount ||
+            !pojemnosc ||
             (customDosing && doseTimes.some(time => !time))
         ) {
             alert("Uzupełnij wszystkie pola");
@@ -162,7 +163,8 @@ const NewDrug = () => {
                     nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
                     dataWaznosci: expiryDate,
                     dawkowanie: doseTimes.filter(time => time !== ""),
-                    tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
+                    pojemnosc: parseInt(pojemnosc, 10), // Dodaj liczbę tabletek
+                    iloscTabletekJednorazowo: iloscTabletekJednorazowo,
                 };
 
                 try {
@@ -185,7 +187,8 @@ const NewDrug = () => {
                         nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
                         dataWaznosci: expiryDate,
                         dawkowanie: [doseTimes[0]],
-                        tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
+                        pojemnosc: parseInt(pojemnosc, 10), // Dodaj liczbę tabletek
+                        iloscTabletekJednorazowo: iloscTabletekJednorazowo,
                     };
 
                     if (doseCount > 1) {
@@ -341,13 +344,22 @@ const NewDrug = () => {
                     <div className="tablets-count">
                         <input
                             type="number"
-                            value={tabletsCount}
+                            value={pojemnosc}
                             onChange={(e) => {
                                 const newValue = parseInt(e.target.value, 10);
                                 if (!isNaN(newValue) && newValue >= 0 && newValue <= 120) {
-                                    setTabletsCount(newValue);
+                                    setPojemnosc(newValue);
                                 }
                             }}
+                        />
+
+                        <input
+                            type="range"
+                            min="0.25"
+                            max="2"
+                            step="0.25"
+                            value={iloscTabletekJednorazowo}
+                            onChange={(e) => setIloscTabletekJednorazowo(parseFloat(e.target.value))}
                         />
                     </div>
 
@@ -384,8 +396,6 @@ const NewDrug = () => {
                         )}
                     </div>
 
-
-
                     <h3>Godziny dawek:</h3>
                     <div className="dose-times">
                         {renderDoseTimeFields()}
@@ -394,7 +404,6 @@ const NewDrug = () => {
                     <button id="save-button" onClick={handleSaveToFirestore}>
                         Zatwierdź
                     </button>
-
 
                 </div>
             </div>
