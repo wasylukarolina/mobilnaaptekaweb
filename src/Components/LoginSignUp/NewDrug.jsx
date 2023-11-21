@@ -153,8 +153,32 @@ const NewDrug = () => {
             return; // Zatrzymaj proces zapisywania
         }
 
-            if (customDosing) {
-                // Obsługa niestandardowego dawkowania
+        if (customDosing) {
+            // Obsługa niestandardowego dawkowania
+            const userId = auth.currentUser.uid;
+            const db = getFirestore(auth.app);
+            const lekiRef = collection(db, "leki");
+            const newLek = {
+                userId,
+                nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
+                dataWaznosci: expiryDate,
+                dawkowanie: doseTimes.filter(time => time !== ""),
+                pojemnosc: parseInt(pojemnosc, 10), // Dodaj liczbę tabletek
+                iloscTabletekJednorazowo: iloscTabletekJednorazowo,
+            };
+
+            try {
+                await addDoc(lekiRef, newLek);
+                console.log("Lek został zapisany w bazie Firestore.");
+
+                // Dodaj alert po pomyślnym zapisie
+                alert("Lek został pomyślnie zapisany!");
+            } catch (error) {
+                console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
+            }
+        } else {
+            // Obsługa standardowego dawkowania
+            if (doseCount && expiryDate && doseTimes[0]) {
                 const userId = auth.currentUser.uid;
                 const db = getFirestore(auth.app);
                 const lekiRef = collection(db, "leki");
@@ -162,10 +186,28 @@ const NewDrug = () => {
                     userId,
                     nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
                     dataWaznosci: expiryDate,
-                    dawkowanie: doseTimes.filter(time => time !== ""),
+                    dawkowanie: [doseTimes[0]],
                     pojemnosc: parseInt(pojemnosc, 10), // Dodaj liczbę tabletek
                     iloscTabletekJednorazowo: iloscTabletekJednorazowo,
                 };
+
+                if (doseCount > 1) {
+                    const intervalInput = document.querySelector("#interval");
+                    const intervalValue = intervalInput ? parseInt(intervalInput.value, 10) : 0;
+
+                    for (let i = 1; i < doseCount; i++) {
+                        const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
+                        if (!isNaN(intervalValue)) { // Sprawdź, czy intervalValue jest liczbą
+                            const [hours, minutes] = previousTime.split(":").map(Number);
+                            let nextHours = hours + intervalValue;
+                            if (nextHours >= 24) {
+                                nextHours -= 24;
+                            }
+                            const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
+                            newLek.dawkowanie.push(nextTime);
+                        }
+                    }
+                }
 
                 try {
                     await addDoc(lekiRef, newLek);
@@ -176,50 +218,8 @@ const NewDrug = () => {
                 } catch (error) {
                     console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
                 }
-            } else {
-                // Obsługa standardowego dawkowania
-                if (doseCount && expiryDate && doseTimes[0]) {
-                    const userId = auth.currentUser.uid;
-                    const db = getFirestore(auth.app);
-                    const lekiRef = collection(db, "leki");
-                    const newLek = {
-                        userId,
-                        nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
-                        dataWaznosci: expiryDate,
-                        dawkowanie: [doseTimes[0]],
-                        pojemnosc: parseInt(pojemnosc, 10), // Dodaj liczbę tabletek
-                        iloscTabletekJednorazowo: iloscTabletekJednorazowo,
-                    };
-
-                    if (doseCount > 1) {
-                        const intervalInput = document.querySelector("#interval");
-                        const intervalValue = intervalInput ? parseInt(intervalInput.value, 10) : 0;
-
-                        for (let i = 1; i < doseCount; i++) {
-                            const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
-                            if (!isNaN(intervalValue)) { // Sprawdź, czy intervalValue jest liczbą
-                                const [hours, minutes] = previousTime.split(":").map(Number);
-                                let nextHours = hours + intervalValue;
-                                if (nextHours >= 24) {
-                                    nextHours -= 24;
-                                }
-                                const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
-                                newLek.dawkowanie.push(nextTime);
-                            }
-                        }
-                    }
-
-                    try {
-                        await addDoc(lekiRef, newLek);
-                        console.log("Lek został zapisany w bazie Firestore.");
-
-                        // Dodaj alert po pomyślnym zapisie
-                        alert("Lek został pomyślnie zapisany!");
-                    } catch (error) {
-                        console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
-                    }
-                }
             }
+        }
     };
 
     const addDoseTime = () => {
