@@ -26,7 +26,7 @@ const NewDrug = () => {
     const [pojemnosc, setPojemnosc] = useState("");
     const [isDuplicateDrug, setIsDuplicateDrug] = useState(false);
     const [iloscTabletekJednorazowo, setIloscTabletekJednorazowo] = useState(1); // Domyślna wartość suwaka
-
+    const [formattedDisplayDate, setFormattedDisplayDate] = useState("");
 
 
     useEffect(() => {
@@ -102,13 +102,14 @@ const NewDrug = () => {
 
         if (selectedDate >= currentDate) {
             const day = selectedDate.getDate();
-            const month = selectedDate.getMonth() + 1; // Dodaj 1, ponieważ getMonth() zwraca miesiące od 0 do 11
+            const month = selectedDate.getMonth() + 1;
             const year = selectedDate.getFullYear();
 
-            // Utwórz format "dd-mm-yyyy"
-            const formattedDate = `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
-
+            // Utwórz format "rrrr-mm-dd"
+            const formattedDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
             setExpiryDate(formattedDate);
+
+            setFormattedDisplayDate(`${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`);
         } else {
             // Możesz dodać tutaj obsługę błędu lub wyświetlić komunikat o nieprawidłowej dacie
             // Na przykład:
@@ -340,14 +341,12 @@ const NewDrug = () => {
 
                     {/* Pole daty ważności */}
                     <div className="expiry-date">
-
                         <input
                             type="date"
-                            value={expiryDate}
+                            value={expiryDate} // Wartość zapisywana w formie "dd-mm-yyyy"
                             onChange={handleExpiryDateChange}
                         />
                     </div>
-
                     <h3>Liczba tabletek:</h3>
                     <div className="tablets-count">
                         <input

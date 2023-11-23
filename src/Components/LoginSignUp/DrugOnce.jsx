@@ -22,11 +22,11 @@ const Health = () => {
 
 
     useEffect(() => {
-        const userId = auth.currentUser.uid;
+        const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
 
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("userId", "==", userId));
+        const q = query(usersRef, where("email", "==", email));
 
         getDocs(q)
             .then((querySnapshot) => {
@@ -91,7 +91,7 @@ const Health = () => {
 
     const handleSaveToFirestore = async () => {
         try {
-            const userId = auth.currentUser.uid;
+            const email = auth.currentUser.email;
             const db = getFirestore(auth.app);
             const medicationsRef = collection(db, 'checkedMedications');
             const drugsRef = collection(db, 'leki');
@@ -126,7 +126,7 @@ const Health = () => {
                 // Sprawdź, czy wybrany lek jest już w tabeli "leki" i należy do aktualnie zalogowanego użytkownika
                 const lekiQuery = query(
                     drugsRef,
-                    where("userId", "==", userId),
+                    where("email", "==", email),
                     where("nazwaProduktu", "==", selectedMedication)
                 );
                 const lekiSnapshot = await getDocs(lekiQuery);
@@ -134,7 +134,7 @@ const Health = () => {
                 if (lekiSnapshot.empty) {
                     // Jeśli lek nie istnieje, dodaj go do tabeli "checkedMedications"
                     await addDoc(medicationsRef, {
-                        userId,
+                        email,
                         medicationName: selectedMedication,
                         checkedDate: formattedDate,
                         checkedTime: formattedTime,
@@ -142,7 +142,7 @@ const Health = () => {
                 } else {
 
                     await addDoc(medicationsRef, {
-                        userId,
+                        email,
                         medicationName: selectedMedication,
                         checkedDate: formattedDate,
                         checkedTime: formattedTime,

@@ -20,14 +20,14 @@ const Health = () => {
 
 
     useEffect(() => {
-        const userId = auth.currentUser.uid;
+        const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
 
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("userId", "==", userId));
+        const q = query(usersRef, where("email", "==", email));
 
         const diseasesRef = collection(db, "diseases");
-        const userDiseasesDoc = doc(diseasesRef, userId);
+        const userDiseasesDoc = doc(diseasesRef, email);
 
         // Pobieranie danych z Firebase
         getDoc(userDiseasesDoc)
@@ -62,12 +62,12 @@ const Health = () => {
 
     const handleCheckboxChange = async (checkboxName, isChecked) => {
         try {
-            const userId = auth.currentUser.uid;
+            const email = auth.currentUser.email;
             const db = getFirestore(auth.app);
 
             // Zamiast kolekcji "users" użyj kolekcji "diseases"
             const diseasesRef = collection(db, 'diseases');
-            const userDiseasesDoc = doc(diseasesRef, userId);
+            const userDiseasesDoc = doc(diseasesRef, email);
 
             // Pobierz aktualne dane o chorobach użytkownika
             const userDiseasesSnap = await getDoc(userDiseasesDoc);
@@ -76,8 +76,8 @@ const Health = () => {
             // Zaktualizuj dane o chorobach
             userDiseases[checkboxName] = isChecked;
 
-            // Dodaj pole "userId" do danych o chorobach
-            userDiseases['userId'] = userId;
+            // Dodaj pole "email" do danych o chorobach
+            userDiseases['email'] = email;
 
             // Zapisz zaktualizowane dane w Firebase
             await setDoc(userDiseasesDoc, userDiseases);

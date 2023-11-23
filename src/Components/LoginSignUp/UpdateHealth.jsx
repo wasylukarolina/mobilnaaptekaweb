@@ -43,11 +43,11 @@ const UpdateHealth = () => {
     };
 
     useEffect(() => {
-        const userId = auth.currentUser.uid;
+        const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
 
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("userId", "==", userId));
+        const q = query(usersRef, where("email", "==", email));
 
         getDocs(q)
             .then((querySnapshot) => {

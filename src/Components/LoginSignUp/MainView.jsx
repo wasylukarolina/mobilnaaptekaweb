@@ -21,10 +21,10 @@ const MainView = () => {
     const [events, setEvents] = useState([]); // Dodaj stan events
 
     useEffect(() => {
-        const userId = auth.currentUser.uid;
+        const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
         const medicationsRef = collection(db, "checkedMedications");
-        const q = query(medicationsRef, where("userId", "==", userId));
+        const q = query(medicationsRef, where("email", "==", email));
 
         getDocs(q)
             .then((querySnapshot) => {

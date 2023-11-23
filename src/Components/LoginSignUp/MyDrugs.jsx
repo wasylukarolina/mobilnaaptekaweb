@@ -27,7 +27,7 @@ const MyDrugs = () => {
     const formattedDate = `${day}/${month}/${year}`;
 
     const db = getFirestore(auth.app);
-    const userId = auth.currentUser.uid;
+    const email = auth.currentUser.email;
     const lekiRef = collection(db, "leki");
     const checkedMedicationsRef = collection(db, "checkedMedications");
 
@@ -52,7 +52,7 @@ const MyDrugs = () => {
         try {
             const lekQuery = query(
                 lekiRef,
-                where("userId", "==", userId),
+                where("email", "==", email),
                 where("nazwaProduktu", "==", drug.nazwaProduktu)
             );
             const lekQuerySnapshot = await getDocs(lekQuery);
@@ -60,12 +60,12 @@ const MyDrugs = () => {
 
             if (lekDoc.exists()) {
                 const lekData = lekDoc.data();
-                drug.tabletsCount = lekData.tabletsCount;
+                drug.pojemnosc = lekData.pojemnosc;
             }
 
             const checkedMedsQuery = query(
                 checkedMedicationsRef,
-                where("userId", "==", userId),
+                where("email", "==", email),
                 where("checkedDate", "==", formattedDate),
                 where("medicationName", "==", drug.nazwaProduktu)
             );
@@ -106,7 +106,7 @@ const MyDrugs = () => {
             // Usuń lek z bazy danych
             await deleteDoc(query(
                 lekiRef,
-                where("userId", "==", userId),
+                where("email", "==", email),
                 where("nazwaProduktu", "==", drugToDelete.nazwaProduktu)
             ));
 
@@ -135,7 +135,7 @@ const MyDrugs = () => {
             // Sprawdź, czy dokument istnieje w bazie danych
             const existingDocQuery = query(
                 checkedMedicationsRef,
-                where("userId", "==", userId),
+                where("email", "==", email),
                 where("medicationName", "==", drug.nazwaProduktu),
                 where("checkedDate", "==", formattedDate),
                 where("checkedTime", "==", selectedTime)
@@ -146,7 +146,7 @@ const MyDrugs = () => {
             if (existingDocSnapshot.size === 0) {
                 // Dodaj dokument, jeśli nie istnieje
                 await addDoc(checkedMedicationsRef, {
-                    userId,
+                    email,
                     medicationName: drug.nazwaProduktu,
                     checkedDate: formattedDate,
                     checkedTime: selectedTime,
@@ -165,7 +165,7 @@ const MyDrugs = () => {
 
             // Zmniejsz lub zwiększ wartość w polu "tabletsCount"
             const tabletsChange = updatedIsChecked[doseKey] ? -1 : 1;
-            const newTabletsCount = drug.tabletsCount + tabletsChange;
+            const newTabletsCount = drug.pojemnosc + tabletsChange;
 
             // Opcjonalnie: upewnij się, że nowa liczba tabletek nie jest ujemna
             const nonNegativeTabletsCount = Math.max(newTabletsCount, 0);
@@ -173,7 +173,7 @@ const MyDrugs = () => {
             // Pobierz odpowiedni dokument leku
             const lekQuery = query(
                 lekiRef,
-                where("userId", "==", userId),
+                where("email", "==", email),
                 where("nazwaProduktu", "==", drug.nazwaProduktu)
             );
 
@@ -182,12 +182,12 @@ const MyDrugs = () => {
 
             // Zaktualizuj pole "tabletsCount" w tabeli "leki" przy użyciu updateDoc
             await updateDoc(lekDoc.ref, {
-                tabletsCount: nonNegativeTabletsCount,
+                pojemnosc: nonNegativeTabletsCount,
             });
 
             // Aktualizuj pole "Liczba tabletek" w stanie selectedDrug
             const updatedSelectedDrug = { ...selectedDrug };
-            updatedSelectedDrug.tabletsCount = nonNegativeTabletsCount;
+            updatedSelectedDrug.pojemnosc = nonNegativeTabletsCount;
             setSelectedDrug(updatedSelectedDrug);
         } catch (error) {
             console.error("Błąd podczas dodawania lub usuwania zaznaczonego leku:", error);
@@ -198,7 +198,7 @@ const MyDrugs = () => {
     const fetchDataFromFirebase = async () => {
         try {
             // Pobierz dane leków użytkownika
-            const userDrugsQuery = query(lekiRef, where("userId", "==", userId));
+            const userDrugsQuery = query(lekiRef, where("email", "==", email));
             const querySnapshot = await getDocs(userDrugsQuery);
             const drugs = querySnapshot.docs.map((doc) => doc.data());
             setUserDrugs(drugs);
@@ -206,7 +206,7 @@ const MyDrugs = () => {
             // Pobierz dane o zaznaczonych lekach
             const checkedMedsQuery = query(
                 checkedMedicationsRef,
-                where("userId", "==", userId),
+                where("email", "==", email),
                 where("checkedDate", "==", formattedDate)
             );
             const checkedMedsSnapshot = await getDocs(checkedMedsQuery);
@@ -284,7 +284,7 @@ const MyDrugs = () => {
                         </div>
 
                         <p><strong>Data ważności:</strong> {selectedDrug.dataWaznosci}</p>
-                        <p><strong>Liczba tabletek:</strong> {selectedDrug.tabletsCount}</p>
+                        <p><strong>Liczba tabletek:</strong> {selectedDrug.pojemnosc}</p>
                         <div>
                             <p><strong>Dawkowanie:</strong></p>
 
