@@ -93,6 +93,26 @@ const MyDrugs = () => {
         }
 
         try {
+            // Usuń lek z bazy danych
+            const lekQuerySnapshot = await getDocs(query(
+                lekiRef,
+                where("email", "==", email),
+                where("nazwaProduktu", "==", drugToDelete.nazwaProduktu)
+            ));
+
+            if (lekQuerySnapshot.size > 0) {
+                const lekDoc = lekQuerySnapshot.docs[0];
+                await deleteDoc(lekDoc.ref);
+            }
+
+            // Odznacz checkboxy
+            const updatedIsChecked = { ...isChecked };
+            for (const dawkowanie of drugToDelete.dawkowanie) {
+                const doseKey = `dose-${drugToDelete.nazwaProduktu}-${dawkowanie.replace(":", "_")}`;
+                updatedIsChecked[doseKey] = false;
+            }
+            setIsChecked(updatedIsChecked);
+
             // Usuń lek bez konieczności odczytu z bazy danych
             const indexToRemove = userDrugs.findIndex((drug) => drug.id === drugToDelete.id);
             const updatedUserDrugs = [...userDrugs];
@@ -101,23 +121,11 @@ const MyDrugs = () => {
 
             // Zamknij modal po usunięciu leku
             setSelectedDrug(null);
-
-
-            // Usuń lek z bazy danych
-            await deleteDoc(query(
-                lekiRef,
-                where("email", "==", email),
-                where("nazwaProduktu", "==", drugToDelete.nazwaProduktu)
-            ));
-
-            // Odznacz checkboxy
-            const updatedIsChecked = { ...isChecked };
-            updatedIsChecked[drugToDelete.nazwaProduktu] = false;
-            setIsChecked(updatedIsChecked);
         } catch (error) {
             console.error("Błąd podczas usuwania leku z bazy danych:", error);
         }
     };
+
 
     const handleCheckboxChange = async (drug, doseKey) => {
         try {
@@ -163,8 +171,8 @@ const MyDrugs = () => {
             updatedIsChecked[doseKey] = !updatedIsChecked[doseKey];
             setIsChecked(updatedIsChecked);
 
-            // Zmniejsz lub zwiększ wartość w polu "tabletsCount"
-            const tabletsChange = updatedIsChecked[doseKey] ? -1 : 1;
+            // Zmniejsz lub zwiększ wartość w polu "tabletsCount" o ilość tabletek jednorazowo
+            const tabletsChange = updatedIsChecked[doseKey] ? -drug.iloscTabletekJednorazowo : drug.iloscTabletekJednorazowo;
             const newTabletsCount = drug.pojemnosc + tabletsChange;
 
             // Opcjonalnie: upewnij się, że nowa liczba tabletek nie jest ujemna
