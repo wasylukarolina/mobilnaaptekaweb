@@ -150,10 +150,16 @@
     border-radius: 10px;
     margin: 0 auto;
     width: 50%;
+    height: 50px;
     text-align: center; /* Wyśrodkowanie tekstu */
-    height: 20px;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
+
+.tablets-count input::placeholder {
+    font-size: 16px; /* Zwiększ rozmiar czcionki */
+    color: #356F90; /* Kolor tekstu */
+}
+
 
 .tablets-count:hover {
     border-color: #AD4027;
@@ -161,6 +167,7 @@
 }
 
 .tablets-count input {
+
     height: 20px;
     width: 100%;
     border: none;
@@ -173,24 +180,50 @@
 }
 
 .labels {
-    display: flex; /* Wyświetlenie napisów obok siebie */
-    gap: 20px; /* Odstęp między napisami */
-    align-items: center; /* Wyśrodkowanie napisów w pionie */
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-direction: column; /* Zmiana kierunku flex na kolumnowy */
+    text-align: center; /* Wyśrodkowanie tekstu w pionie */
 }
 
+
 .dose-count.custom-dosing-container {
-    border: 1px solid #356F90; /* Dodaj obramowanie */
+    border: 1px solid #356F90;
+    margin-top: -20px;
     display: flex;
-    flex-direction: row; /* Ustaw orientację na poziomą, aby elementy były obok siebie */
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    margin: 0 auto;
-    width: 50%;
-    text-align: center; /* Wyśrodkowanie tekstu */
-    height: 20px;transition: border-color 0.3s, box-shadow 0.3s;
+    width: 70%;
+    text-align: center;
+    height: 20px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.custom-dosing-field {
+    display: flex;
+    align-items: center; /* Wyśrodkowanie checkboxa wewnątrz pola */
+}
+
+.custom-dosing-field input {
+    margin: 0; /* Usunięcie domyślnego marginesu od checkboxa */
+}
+
+
+.custom-dosing-field {
+    flex-shrink: 0; /* Zapobiegnij kurczeniu się pola checkbox */
+    margin-right: 10px; /* Dodanie marginesu do pola checkboxa */
+    display: flex;
+    align-items: center; /* Wyśrodkowanie checkboxa wewnątrz pola */
+}
+
+.dose-count-field {
+    display: flex;
+    align-items: center;
 }
 
 .dose-count.custom-dosing-container:hover {
@@ -198,11 +231,52 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
+.button-container {
+    flex-shrink: 0; /* Zapobiega zmniejszaniu przycisków podczas zmniejszania szerokości */
+    margin: 0 10px; /* Odstęp między przyciskami a tekstem */
+}
+
+
 .dose-count-field,
 .custom-dosing-field {
     flex: 1; /* Elastyczne dostosowanie szerokości */
     text-align: center; /* Wyśrodkowanie tekstu */
     padding: 10px; /* Dodaj odstęp wewnątrz pól */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #356F90;
+}
+
+.dose-count-field button {
+    background: none;
+    padding: 10px;
+    color: #356F90; /* Kolor napisu */
+    border: none;
+    border-radius: 50%; /* Zaokrąglenie do kształtu kółka */
+    cursor: pointer;
+    outline: none; /* Usunięcie obramowania po kliknięciu */
+    width: 30px; /* Ustawienie szerokości przycisku */
+    height: 30px; /* Ustawienie wysokości przycisku */
+    transition: background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s, font-size 0.3s; /* Dodanie tranzycji do font-size i box-shadow */
+    font-size: 16px; /* Zwiększenie rozmiaru fontu */
+    font-weight: bolder;
+    display: flex; /* Ustawienie elementu flexbox */
+    align-items: center; /* Wyśrodkowanie w pionie */
+    justify-content: center; /* Wyśrodkowanie w poziomie */
+}
+
+.dose-count-field button:hover {
+    color: #AD4027;
+    border: 1px solid #AD4027;
+    font-weight: normal;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Dodanie cienia po najechaniu */
+    font-size: 26px; /* Zwiększenie rozmiaru fontu po najechaniu */
+}
+
+
+.dose-count-field span {
+    font-size: 18px;
 }
 
 .dose-count-field h3,
@@ -305,4 +379,52 @@
     border: 1px solid #356F90;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     color: #356F90;
+}
+/* Styl dla nowego diva zawierającego input range */
+.range-container {
+    position: relative;
+    width: 100%;
+}
+
+.range-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Styl dla wyświetlania wartości nad input range */
+.range-value {
+    position: absolute;
+    top: 0px; /* Zmniejsz odległość od góry */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #3498db;
+}
+
+.dose-times button {
+    background: none;
+    padding: 10px;
+    color: #356F90; /* Kolor napisu */
+    border: none;
+    border-radius: 50%; /* Zaokrąglenie do kształtu kółka */
+    cursor: pointer;
+    outline: none; /* Usunięcie obramowania po kliknięciu */
+    width: 30px; /* Ustawienie szerokości przycisku */
+    height: 30px; /* Ustawienie wysokości przycisku */
+    transition: background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s, font-size 0.3s; /* Dodanie tranzycji do font-size i box-shadow */
+    font-size: 16px; /* Zwiększenie rozmiaru fontu */
+    font-weight: bolder;
+    display: flex; /* Ustawienie elementu flexbox */
+    align-items: center; /* Wyśrodkowanie w pionie */
+    justify-content: center; /* Wyśrodkowanie w poziomie */
+}
+
+.dose-times button:hover {
+    color: #AD4027;
+    border: 1px solid #AD4027;
+    font-weight: normal;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Dodanie cienia po najechaniu */
+    font-size: 26px; /* Zwiększenie rozmiaru fontu po najechaniu */
 }

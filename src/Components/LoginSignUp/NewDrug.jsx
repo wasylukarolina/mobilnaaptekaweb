@@ -252,7 +252,7 @@ const NewDrug = () => {
                         </div>
                     ))}
                     {customDosing && (
-                        <button onClick={addDoseTime}>DODAJ</button>
+                        <button onClick={addDoseTime}>+</button>
                     )}
                 </>
             ) : null;
@@ -347,11 +347,13 @@ const NewDrug = () => {
                             onChange={handleExpiryDateChange}
                         />
                     </div>
+
                     <h3>Liczba tabletek:</h3>
                     <div className="tablets-count">
                         <input
                             type="number"
                             value={pojemnosc}
+                            placeholder="Liczba tabletek"
                             onChange={(e) => {
                                 const newValue = parseInt(e.target.value, 10);
                                 if (!isNaN(newValue) && newValue >= 0 && newValue <= 120) {
@@ -360,14 +362,17 @@ const NewDrug = () => {
                             }}
                         />
 
-                        <input
-                            type="range"
-                            min="0.25"
-                            max="2"
-                            step="0.25"
-                            value={iloscTabletekJednorazowo}
-                            onChange={(e) => setIloscTabletekJednorazowo(parseFloat(e.target.value))}
-                        />
+                        <div className="range-container">
+                            <input
+                                type="range"
+                                min="0.5"
+                                max="2"
+                                step="0.5"
+                                value={iloscTabletekJednorazowo}
+                                onChange={(e) => setIloscTabletekJednorazowo(parseFloat(e.target.value))}
+                            />
+                            <div className="range-value">{iloscTabletekJednorazowo}</div>
+                        </div>
                     </div>
 
                     <div className="labels">
@@ -381,29 +386,24 @@ const NewDrug = () => {
                                     onChange={handleCustomDosingChange}
                                 />
                             </div>
-                        </div>
 
-                        {customDosing ? ( null
+                            {customDosing ? (
+                                null
 
-                        ) : (
-                            <div className="dose-count custom-dosing-container">
+                            ) :
                                 <div className="dose-count-field">
+                                    <button onClick={() => setDoseCount((prevCount) => Math.max(prevCount - 1, 1))}
+                                            disabled={doseCount <= 1}>
+                                        -
+                                    </button>
+                                    <span>Dawki: {doseCount}</span>
                                     <button onClick={() => setDoseCount((prevCount) => prevCount + 1)}>
-                                        Dodaj dawkę
+                                        +
                                     </button>
-                                    <button
-                                        onClick={() => setDoseCount((prevCount) => Math.max(prevCount - 1, 1))}
-                                        disabled={doseCount <= 1}
-                                    >
-                                        Usuń dawkę
-                                    </button>
-                                    <span>Liczba dawek: {doseCount}</span>
-                                </div>
-                            </div>
-
-
-                        )}
+                                </div>}
+                        </div>
                     </div>
+
 
                     <h3>Godziny dawek:</h3>
                     <div className="dose-times">
