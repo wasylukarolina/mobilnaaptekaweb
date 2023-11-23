@@ -23,16 +23,17 @@ const NewDrug = () => {
     const [doseTimes, setDoseTimes] = useState([]); // Nowe pole godzin dawek
     const [customDosing, setCustomDosing] = useState(false); // Nowe pole
     const [interval, setInterval] = useState(0); // Domyślnie ustaw na 0
-    const [tabletsCount, setTabletsCount] = useState("");
+    const [pojemnosc, setPojemnosc] = useState("");
     const [isDuplicateDrug, setIsDuplicateDrug] = useState(false);
+    const [iloscTabletekJednorazowo, setIloscTabletekJednorazowo] = useState(1); // Domyślna wartość suwaka
 
 
 
     useEffect(() => {
-        const userId = auth.currentUser.uid;
+        const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("userId", "==", userId));
+        const q = query(usersRef, where("email", "==", email));
 
         getDocs(q)
             .then((querySnapshot) => {
@@ -100,13 +101,21 @@ const NewDrug = () => {
         const currentDate = new Date();
 
         if (selectedDate >= currentDate) {
-            setExpiryDate(event.target.value);
+            const day = selectedDate.getDate();
+            const month = selectedDate.getMonth() + 1; // Dodaj 1, ponieważ getMonth() zwraca miesiące od 0 do 11
+            const year = selectedDate.getFullYear();
+
+            // Utwórz format "dd-mm-yyyy"
+            const formattedDate = `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
+
+            setExpiryDate(formattedDate);
         } else {
             // Możesz dodać tutaj obsługę błędu lub wyświetlić komunikat o nieprawidłowej dacie
             // Na przykład:
             alert("Nie można ustawić daty wcześniejszej niż dzisiejsza data. Nie używaj przeterminowanych leków.");
         }
     };
+
 
     const handleDoseCountChange = (event) => {
         setDoseCount(event.target.value);
@@ -127,14 +136,14 @@ const NewDrug = () => {
     };
 
     const handleSaveToFirestore = async () => {
-        const userId = auth.currentUser.uid;
+        const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
         const lekiRef = collection(db, "leki");
 
         if (
             !selectedProductNames[0] ||
             !expiryDate ||
-            !tabletsCount ||
+            !pojemnosc ||
             (customDosing && doseTimes.some(time => !time))
         ) {
             alert("Uzupełnij wszystkie pola");
@@ -142,7 +151,7 @@ const NewDrug = () => {
         }
 
         // Sprawdź, czy wybrany lek istnieje już w bazie dla tego użytkownika
-        const existingDrugQuery = query(lekiRef, where("userId", "==", userId), where("nazwaProduktu", "==", selectedProductNames[0]));
+        const existingDrugQuery = query(lekiRef, where("email", "==", email), where("nazwaProduktu", "==", selectedProductNames[0]));
         const existingDrugSnapshot = await getDocs(existingDrugQuery);
 
         if (existingDrugSnapshot.size > 0) {
@@ -152,18 +161,61 @@ const NewDrug = () => {
             return; // Zatrzymaj proces zapisywania
         }
 
-            if (customDosing) {
-                // Obsługa niestandardowego dawkowania
-                const userId = auth.currentUser.uid;
+        if (customDosing) {
+            // Obsługa niestandardowego dawkowania
+            const email= auth.currentUser.email;
+            const db = getFirestore(auth.app);
+            const lekiRef = collection(db, "leki");
+            const newLek = {
+                email,
+                nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
+                dataWaznosci: expiryDate,
+                dawkowanie: doseTimes.filter(time => time !== ""),
+                pojemnosc: parseInt(pojemnosc, 10), // Dodaj liczbę tabletek
+                iloscTabletekJednorazowo: iloscTabletekJednorazowo,
+            };
+
+            try {
+                await addDoc(lekiRef, newLek);
+                console.log("Lek został zapisany w bazie Firestore.");
+
+                // Dodaj alert po pomyślnym zapisie
+                alert("Lek został pomyślnie zapisany!");
+            } catch (error) {
+                console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
+            }
+        } else {
+            // Obsługa standardowego dawkowania
+            if (doseCount && expiryDate && doseTimes[0]) {
+                const email = auth.currentUser.email;
                 const db = getFirestore(auth.app);
                 const lekiRef = collection(db, "leki");
                 const newLek = {
-                    userId,
+                    email,
                     nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
                     dataWaznosci: expiryDate,
-                    dawkowanie: doseTimes.filter(time => time !== ""),
-                    tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
+                    dawkowanie: [doseTimes[0]],
+                    pojemnosc: parseInt(pojemnosc, 10), // Dodaj liczbę tabletek
+                    iloscTabletekJednorazowo: iloscTabletekJednorazowo,
                 };
+
+                if (doseCount > 1) {
+                    const intervalInput = document.querySelector("#interval");
+                    const intervalValue = intervalInput ? parseInt(intervalInput.value, 10) : 0;
+
+                    for (let i = 1; i < doseCount; i++) {
+                        const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
+                        if (!isNaN(intervalValue)) { // Sprawdź, czy intervalValue jest liczbą
+                            const [hours, minutes] = previousTime.split(":").map(Number);
+                            let nextHours = hours + intervalValue;
+                            if (nextHours >= 24) {
+                                nextHours -= 24;
+                            }
+                            const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
+                            newLek.dawkowanie.push(nextTime);
+                        }
+                    }
+                }
 
                 try {
                     await addDoc(lekiRef, newLek);
@@ -174,49 +226,8 @@ const NewDrug = () => {
                 } catch (error) {
                     console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
                 }
-            } else {
-                // Obsługa standardowego dawkowania
-                if (doseCount && expiryDate && doseTimes[0]) {
-                    const userId = auth.currentUser.uid;
-                    const db = getFirestore(auth.app);
-                    const lekiRef = collection(db, "leki");
-                    const newLek = {
-                        userId,
-                        nazwaProduktu: selectedProductNames[0], // Załóżmy, że zapisujemy tylko pierwszy wybrany lek
-                        dataWaznosci: expiryDate,
-                        dawkowanie: [doseTimes[0]],
-                        tabletsCount: parseInt(tabletsCount, 10), // Dodaj liczbę tabletek
-                    };
-
-                    if (doseCount > 1) {
-                        const intervalInput = document.querySelector("#interval");
-                        const intervalValue = intervalInput ? parseInt(intervalInput.value, 10) : 0;
-
-                        for (let i = 1; i < doseCount; i++) {
-                            const previousTime = newLek.dawkowanie[newLek.dawkowanie.length - 1];
-                            if (!isNaN(intervalValue)) { // Sprawdź, czy intervalValue jest liczbą
-                                const [hours, minutes] = previousTime.split(":").map(Number);
-                                let nextHours = hours + intervalValue;
-                                if (nextHours >= 24) {
-                                    nextHours -= 24;
-                                }
-                                const nextTime = `${nextHours < 10 ? "0" : ""}${nextHours}:${minutes < 10 ? "0" : ""}${minutes}`;
-                                newLek.dawkowanie.push(nextTime);
-                            }
-                        }
-                    }
-
-                    try {
-                        await addDoc(lekiRef, newLek);
-                        console.log("Lek został zapisany w bazie Firestore.");
-
-                        // Dodaj alert po pomyślnym zapisie
-                        alert("Lek został pomyślnie zapisany!");
-                    } catch (error) {
-                        console.error("Błąd podczas zapisywania leku w bazie Firestore:", error);
-                    }
-                }
             }
+        }
     };
 
     const addDoseTime = () => {
@@ -341,13 +352,22 @@ const NewDrug = () => {
                     <div className="tablets-count">
                         <input
                             type="number"
-                            value={tabletsCount}
+                            value={pojemnosc}
                             onChange={(e) => {
                                 const newValue = parseInt(e.target.value, 10);
                                 if (!isNaN(newValue) && newValue >= 0 && newValue <= 120) {
-                                    setTabletsCount(newValue);
+                                    setPojemnosc(newValue);
                                 }
                             }}
+                        />
+
+                        <input
+                            type="range"
+                            min="0.25"
+                            max="2"
+                            step="0.25"
+                            value={iloscTabletekJednorazowo}
+                            onChange={(e) => setIloscTabletekJednorazowo(parseFloat(e.target.value))}
                         />
                     </div>
 
@@ -369,22 +389,22 @@ const NewDrug = () => {
                         ) : (
                             <div className="dose-count custom-dosing-container">
                                 <div className="dose-count-field">
-                                    <select
-                                        value={doseCount}
-                                        onChange={handleDoseCountChange}
+                                    <button onClick={() => setDoseCount((prevCount) => prevCount + 1)}>
+                                        Dodaj dawkę
+                                    </button>
+                                    <button
+                                        onClick={() => setDoseCount((prevCount) => Math.max(prevCount - 1, 1))}
+                                        disabled={doseCount <= 1}
                                     >
-                                        <option value="">Liczba dawkowań</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                    </select>
+                                        Usuń dawkę
+                                    </button>
+                                    <span>Liczba dawek: {doseCount}</span>
                                 </div>
                             </div>
+
+
                         )}
                     </div>
-
-
 
                     <h3>Godziny dawek:</h3>
                     <div className="dose-times">
@@ -394,7 +414,6 @@ const NewDrug = () => {
                     <button id="save-button" onClick={handleSaveToFirestore}>
                         Zatwierdź
                     </button>
-
 
                 </div>
             </div>

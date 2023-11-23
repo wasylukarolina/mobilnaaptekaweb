@@ -302,24 +302,6 @@ const MyDrugs = () => {
                                                 />
                                                 <label htmlFor={`checkbox-${index}`}>{dawkowanie}</label>
                                             </div>
-                                            <div className="slider-controls">
-                                                <input
-                                                    type="range"
-                                                    min="0.25"
-                                                    max="2"
-                                                    step="0.25"
-                                                    value={isChecked[doseKey] || 0}
-                                                    onChange={(e) => {
-                                                        const newValue = parseFloat(e.target.value);
-                                                        const updatedIsChecked = { ...isChecked };
-                                                        updatedIsChecked[doseKey] = newValue;
-                                                        setIsChecked(updatedIsChecked);
-                                                    }}
-                                                />
-                                                <span className="slider-value">
-            {isChecked[doseKey] ? `${isChecked[doseKey]}x` : '0x'}
-          </span>
-                                            </div>
                                         </li>
                                     );
                                 })}
