@@ -27,13 +27,37 @@ const NewDrug = () => {
     const [isDuplicateDrug, setIsDuplicateDrug] = useState(false);
     const [iloscTabletekJednorazowo, setIloscTabletekJednorazowo] = useState(1); // Domyślna wartość suwaka
     const [formattedDisplayDate, setFormattedDisplayDate] = useState("");
-
+    const [isHoveredSearchInput, setIsHoveredSearchInput] = useState(false);
+    const [isHoveredExpiryDate, setIsHoveredExpiryDate] = useState(false);
 
     useEffect(() => {
         const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("email", "==", email));
+
+        const searchInputContainer = document.querySelector(".search-input-container");
+        const expiryDateContainer = document.querySelector(".expiry-date");
+
+        if (searchInputContainer) {
+            searchInputContainer.addEventListener("mouseenter", () => {
+                setIsHoveredSearchInput(true);
+            });
+
+            searchInputContainer.addEventListener("mouseleave", () => {
+                setIsHoveredSearchInput(false);
+            });
+        }
+
+        if (expiryDateContainer) {
+            expiryDateContainer.addEventListener("mouseenter", () => {
+                setIsHoveredExpiryDate(true);
+            });
+
+            expiryDateContainer.addEventListener("mouseleave", () => {
+                setIsHoveredExpiryDate(false);
+            });
+        }
 
         getDocs(q)
             .then((querySnapshot) => {
@@ -65,6 +89,28 @@ const NewDrug = () => {
             });
 
 
+        return () => {
+            // Usuń nasłuchiwanie zdarzeń po odmontowaniu komponentu
+            if (searchInputContainer) {
+                searchInputContainer.removeEventListener("mouseenter", () => {
+                    setIsHoveredSearchInput(true);
+                });
+
+                searchInputContainer.removeEventListener("mouseleave", () => {
+                    setIsHoveredSearchInput(false);
+                });
+            }
+
+            if (expiryDateContainer) {
+                expiryDateContainer.removeEventListener("mouseenter", () => {
+                    setIsHoveredExpiryDate(true);
+                });
+
+                expiryDateContainer.removeEventListener("mouseleave", () => {
+                    setIsHoveredExpiryDate(false);
+                });
+            }
+        };
     }, []);
 
     const handleLogout = async () => {
@@ -116,7 +162,6 @@ const NewDrug = () => {
             alert("Nie można ustawić daty wcześniejszej niż dzisiejsza data. Nie używaj przeterminowanych leków.");
         }
     };
-
 
     const handleDoseCountChange = (event) => {
         setDoseCount(event.target.value);
@@ -306,9 +351,11 @@ const NewDrug = () => {
             <div className="content with-background">
                 <h1> </h1>
                 <div className="drug-entry-field">
+
                     <h2>Wyszukaj lub wybierz lek:</h2>
                     <div className="search-input-container">
-                        <input
+                        {isHoveredSearchInput}
+                    <input
                             type="text"
                             placeholder="Wyszukaj lub wybierz lek"
                             value={selectedProducts[0] || ""}
@@ -414,6 +461,16 @@ const NewDrug = () => {
                         Zatwierdź
                     </button>
 
+                </div>
+
+                <div className="hover-text-container">
+                    {isHoveredSearchInput && (
+                        <div className="hover-text">Wpisz nazwę regularnie branego leku</div>
+                    )}
+
+                    {isHoveredExpiryDate && (
+                        <div className="hover-text2">Zaznacz datę ważności opakowania</div>
+                    )}
                 </div>
             </div>
         </div>
