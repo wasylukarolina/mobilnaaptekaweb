@@ -47,7 +47,16 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     position: absolute;
-    top: 350px;
+    top: 390px;
+}
+
+.hover-text3 {
+    background-color: transparent;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    position: absolute;
+    top: 480px;
 }
 
 .hover-text-container:hover .hover-text {

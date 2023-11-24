@@ -29,6 +29,9 @@ const NewDrug = () => {
     const [formattedDisplayDate, setFormattedDisplayDate] = useState("");
     const [isHoveredSearchInput, setIsHoveredSearchInput] = useState(false);
     const [isHoveredExpiryDate, setIsHoveredExpiryDate] = useState(false);
+    const [isHoveredTabletsCount, setIsHoveredTabletsCount] = useState(false);
+    const [isHoveredDoseCount, setIsHoveredDoseCount] = useState(false);
+    const [isHoveredDoseTimes, setIsHoveredDoseTimes] = useState(false);
 
     useEffect(() => {
         const email = auth.currentUser.email;
@@ -38,6 +41,9 @@ const NewDrug = () => {
 
         const searchInputContainer = document.querySelector(".search-input-container");
         const expiryDateContainer = document.querySelector(".expiry-date");
+        const tabletsCountContainer = document.querySelector(".tablets-count");
+        const doseCountContainer = document.querySelector(".dose-count");
+        const doseTimesContainer = document.querySelector(".dose-times");
 
         if (searchInputContainer) {
             searchInputContainer.addEventListener("mouseenter", () => {
@@ -56,6 +62,36 @@ const NewDrug = () => {
 
             expiryDateContainer.addEventListener("mouseleave", () => {
                 setIsHoveredExpiryDate(false);
+            });
+        }
+
+        if (tabletsCountContainer) {
+            tabletsCountContainer.addEventListener("mouseenter", () => {
+                setIsHoveredTabletsCount(true);
+            });
+
+            tabletsCountContainer.addEventListener("mouseleave", () => {
+                setIsHoveredTabletsCount(false);
+            });
+        }
+
+        if (doseCountContainer) {
+            doseCountContainer.addEventListener("mouseenter", () => {
+                setIsHoveredDoseCount(true);
+            });
+
+            doseCountContainer.addEventListener("mouseleave", () => {
+                setIsHoveredDoseCount(false);
+            });
+        }
+
+        if (doseTimesContainer) {
+            doseTimesContainer.addEventListener("mouseenter", () => {
+                setIsHoveredDoseTimes(true);
+            });
+
+            doseTimesContainer.addEventListener("mouseleave", () => {
+                setIsHoveredDoseTimes(false);
             });
         }
 
@@ -108,6 +144,36 @@ const NewDrug = () => {
 
                 expiryDateContainer.removeEventListener("mouseleave", () => {
                     setIsHoveredExpiryDate(false);
+                });
+            }
+
+            if (tabletsCountContainer) {
+                tabletsCountContainer.removeEventListener("mouseenter", () => {
+                    setIsHoveredTabletsCount(true);
+                });
+
+                tabletsCountContainer.removeEventListener("mouseleave", () => {
+                    setIsHoveredTabletsCount(false);
+                });
+            }
+
+            if (doseCountContainer) {
+                doseCountContainer.removeEventListener("mouseenter", () => {
+                    setIsHoveredDoseCount(true);
+                });
+
+                doseCountContainer.removeEventListener("mouseleave", () => {
+                    setIsHoveredDoseCount(false);
+                });
+            }
+
+            if (doseTimesContainer) {
+                doseTimesContainer.removeEventListener("mouseenter", () => {
+                    setIsHoveredDoseTimes(true);
+                });
+
+                doseTimesContainer.removeEventListener("mouseleave", () => {
+                    setIsHoveredDoseTimes(false);
                 });
             }
         };
@@ -470,6 +536,21 @@ const NewDrug = () => {
 
                     {isHoveredExpiryDate && (
                         <div className="hover-text2">Zaznacz datę ważności opakowania</div>
+                    )}
+
+                    {isHoveredTabletsCount && (
+                        <div className="hover-text3">Wpisz liczbę tabletek znajdujących się w opakowaniu i zaznacz ile tabletek bierzesz jednorazowo</div>
+
+                    )}
+
+                    {isHoveredDoseCount && (
+                        <div className="hover-text4">Jeśli bierzesz tabletki w równych odstępach czasu pozostaw pole odznaczone i wybierz liczbę dawek. Jeśli między dawkami są różne odstępy godzin zaznacz checkbox. </div>
+
+                    )}
+
+                    {isHoveredDoseTimes && (
+                        <div className="hover-text5">Pole z zegarem służy do wpisywania godziny. Obok wpisz liczbę godzin między dawkami. Plus służy do dodawania kolejnych godzin dawek. </div>
+
                     )}
                 </div>
             </div>
