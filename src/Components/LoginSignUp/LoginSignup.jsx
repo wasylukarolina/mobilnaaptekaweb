@@ -84,12 +84,19 @@ const LoginSignup = () => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             console.log(userCredential);
             setIsLoggedIn(true);
-            navigate('/mainview');
+
+            // Sprawdź, czy adres e-mail zawiera "@lekarz.pl"
+            if (email.includes("@lekarz.pl")) {
+                navigate('/mainviewdoc');
+            } else {
+                navigate('/mainview');
+            }
         } catch (error) {
             console.error(error);
             alert("Nieudane logowanie. Sprawdź adres e-mail i hasło.");
         }
     };
+
 
 
     const handleResetPassword = () => {

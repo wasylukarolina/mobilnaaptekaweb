@@ -6,6 +6,8 @@ import MyDrugs from "./Components/LoginSignUp/MyDrugs";
 import Health from "./Components/LoginSignUp/Health";
 import UpdateHealth from "./Components/LoginSignUp/UpdateHealth";
 import DrugOnce from "./Components/LoginSignUp/DrugOnce";
+import MainViewDoc from "./Components/LoginSignUp/MainViewDoc";
+import Doctors from "./Components/LoginSignUp/Doctors";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebaseConfig";
@@ -17,18 +19,20 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={!user ? <LoginSignup /> : <Navigate to="/mainview" />} />
-                <Route
-                    path="/mainview"
-                    element={user ? <MainView /> : <Navigate to="/" replace />}
-                />
-                <Route path="/newdrug" element={user ? <NewDrug /> : <Navigate to="/" />} />
-                <Route path="/mydrugs" element={user ? <MyDrugs /> : <Navigate to="/" />} />
-                <Route path="/health" element={user ? <Health /> : <Navigate to="/" />} />
-                <Route path="/updatehealth" element={user ? <UpdateHealth /> : <Navigate to="/" />} />
-                <Route path="/drugonce" element={user ? <DrugOnce /> : <Navigate to="/" />} />
+                {user ? (
+                    <>
+                        <Route path="/mainview" element={<MainView />} />
+                        <Route path="/newdrug" element={<NewDrug />} />
+                        <Route path="/mydrugs" element={<MyDrugs />} />
+                        <Route path="/health" element={<Health />} />
+                        <Route path="/updatehealth" element={<UpdateHealth />} />
+                        <Route path="/drugonce" element={<DrugOnce />} />
+                        <Route path="/mainviewdoc" element={<MainViewDoc />} />
+                        <Route path="/doctors" element={<Doctors />} />
+                    </>
+                ) : null}
             </Routes>
         </Router>
-
     );
 }
 

@@ -1,0 +1,188 @@
+/* Dodaj nowy styl dla podświetlonych elementów */
+.hovered {
+    border: 2px solid #007bff; /* Przykładowy kolor obramówki */
+    padding: 10px;
+    background-color: #f0f0f0; /* Przykładowy kolor tła */
+    cursor: pointer;
+}
+
+/* Styl dla elementów listy */
+ul li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.patient-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(245, 245, 245, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto;
+    width: 60%;
+    border: 1px solid #AD4027;
+    background-clip: padding-box; /* Zapobiegnij rozmyciu tła w obramówce */
+}
+
+.patient-field ul {
+    padding: 0;
+}
+
+.patient-field li {
+    list-style: none;
+    margin: 10px 0; /* Odstęp między elementami listy */
+    text-align: center;
+}
+
+/* Nowe style dla leków na liście */
+.patient-field ul li {
+    transition: background-color 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.patient-field ul li:hover {
+    background-color: white; /* Białe tło po najechaniu */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Cień */
+    border: 1px solid #356F90; /* Niebieskie obramowanie */
+}
+
+.patient-modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: rgba(255, 255, 255, 0.9); /* Białe tło z przezroczystością */
+    border: 1px solid #356F90; /* Niebieska obramówka */
+    border-radius: 10px; /* Zaokrąglone rogi */
+    padding: 20px;
+    text-align: center;
+}
+
+
+.patient-modal > * {
+    margin: 5px 0; /* Dostosuj odstęp według własnych preferencji */
+}
+
+
+.modal-content {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.doctor-modal h2 {
+    color: #356F90; /* Kolor tytułu */
+}
+
+.button-add button {
+    display: flex;
+    border: 1px solid #356F90;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 40px;
+    background-color: white;
+    color: #356F90;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.button-add button:disabled {
+    background-color: #ccc; /* Szary kolor tła */
+    color: #666; /* Szary kolor tekstu */
+    border-color: #ccc; /* Szare obramowanie */
+    cursor: not-allowed; /* Zmiana kursora na not-allowed */
+}
+
+
+.button-add button:hover {
+    border: 1px solid #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #AD4027;
+}
+
+.button-add button:disabled:hover {
+    /* Dodaj stylizację, która ma być aplikowana tylko wtedy, gdy przycisk jest wyłączony i użytkownik najedzie na niego kursorem */
+    background-color: #ccc; /* Kolor tła po najechaniu */
+    color: #666; /* Kolor tekstu po najechaniu */
+    border-color: #ccc; /* Kolor obramowania po najechaniu */
+    cursor: not-allowed; /* Zmiana kursora na not-allowed */
+    box-shadow: none;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between; /* Dla równomiernego odstępu między przyciskami */
+    width: 300px; /* Dostosuj szerokość do swoich preferencji */
+    margin: 0 auto; /* Aby wycentrować w poziomie */
+    gap: 10px; /* Dodaj odstęp między przyciskami */
+}
+
+
+.content.with-background #save-button {
+    display: flex;
+    border: none;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #AD4027;
+    background: white;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; /* Wyśrodkowanie zawartości */
+}
+
+.drug-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: -25px;
+}
+
+drug-info > * {
+    margin: 10px 0; /* Zmniejsz odstęp góra i dół */
+}
+
+.drug-modal ul {
+    list-style-position: inside; /* Umieść znaki wiodące wewnątrz listy */
+    text-align: center; /* Wyśrodkuj tekst wewnątrz listy */
+}
+
+ul.centered-list {
+    text-align: center; /* Wyśrodkuj tekst wewnątrz listy */
+    list-style-position: inside; /* Umieść znaki wiodące wewnątrz listy */
+}
+
+.centered-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+}
+
+
+
+
+
