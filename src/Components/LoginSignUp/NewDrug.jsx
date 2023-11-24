@@ -348,7 +348,6 @@ const NewDrug = () => {
         setDoseTimes(newDoseTimes);
     };
 
-
     const renderDoseTimeFields = () => {
         if (customDosing) {
             return doseCount > 0 ? (
@@ -363,7 +362,9 @@ const NewDrug = () => {
                         </div>
                     ))}
                     {customDosing && (
-                        <button onClick={addDoseTime}>+</button>
+                        <button onClick={addDoseTime} disabled={doseTimes.length >= 12}>
+                            +
+                        </button>
                     )}
                 </>
             ) : null;
@@ -505,16 +506,21 @@ const NewDrug = () => {
 
                             ) :
                                 <div className="dose-count-field">
-                                    <button onClick={() => setDoseCount((prevCount) => Math.max(prevCount - 1, 1))}
-                                            disabled={doseCount <= 1}>
+                                    <button
+                                        onClick={() => setDoseCount((prevCount) => Math.max(prevCount - 1, 1))}
+                                        disabled={doseCount <= 1}
+                                    >
                                         -
                                     </button>
                                     <span>Dawki: {doseCount}</span>
-                                    <button onClick={() => setDoseCount((prevCount) => prevCount + 1)}>
+                                    <button
+                                        onClick={() => setDoseCount((prevCount) => Math.min(prevCount + 1, 24))}
+                                        disabled={doseCount >= 24}
+                                    >
                                         +
                                     </button>
                                 </div>}
-                        </div>
+                                </div>
                     </div>
 
 
