@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
@@ -268,9 +268,30 @@ const NewDrug = () => {
 
         if (existingDrugSnapshot.size > 0) {
             // Lek o takiej nazwie już istnieje w bazie dla tego użytkownika
-            setIsDuplicateDrug(true);
-            alert("Lek już istnieje w twojej bazie.");
-            return; // Zatrzymaj proces zapisywania
+            const existingDrugDoc = existingDrugSnapshot.docs[0];
+            const existingDrugData = existingDrugDoc.data();
+
+            // Zaktualizuj datę ważności, liczbę tabletek i dawkowanie
+            const newExpiryDate = existingDrugData.dataWaznosci < expiryDate ? expiryDate : existingDrugData.dataWaznosci;
+            const newTabletsCount = existingDrugData.pojemnosc + parseInt(pojemnosc, 10);
+            const newDawkowanie = customDosing ? doseTimes.filter(time => time !== "") : [doseTimes[0]];
+
+            try {
+                // Zaktualizuj dokument w bazie danych
+                await updateDoc(existingDrugDoc.ref, {
+                    dataWaznosci: newExpiryDate,
+                    pojemnosc: newTabletsCount,
+                    dawkowanie: newDawkowanie,
+                });
+
+                // Dodaj alert po pomyślnym zaktualizowaniu
+                alert("Lek został zaktualizowany w bazie Firestore.");
+            } catch (error) {
+                console.error("Błąd podczas aktualizacji leku w bazie Firestore:", error);
+            }
+
+            // Zatrzymaj proces zapisywania
+            return;
         }
 
         if (customDosing) {

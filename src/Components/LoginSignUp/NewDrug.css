@@ -69,6 +69,20 @@
     justify-content: flex-start; /* Przesuń zawartość w lewo */
 }
 
+.drug-field{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(245, 245, 245, 0.5); /* Szare tło z 50% przezroczystości */
+    border-radius: 10px;
+    margin: 5% 0 0 10%;
+    width: 50%;
+    border: 1px solid #AD4027;
+    background-clip: padding-box; /* Zapobiegnij rozmyciu tła w obramówce */
+    height: 70%;
+}
+
 
 .drug-entry-field {
     display: flex;

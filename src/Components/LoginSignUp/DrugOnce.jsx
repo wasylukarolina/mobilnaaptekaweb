@@ -10,7 +10,7 @@ import './MyDrugs.css';
 import productData from "../Assets/Rejestr_Produktow_Leczniczych_calosciowy_stan_na_dzien_20230511.xml";
 
 
-const Health = () => {
+const DrugOnce = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [productNames, setProductNames] = useState([]);
@@ -19,6 +19,7 @@ const Health = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectedProductNames, setSelectedProductNames] = useState([]);
     const [selectedTime, setSelectedTime] = useState(""); // Dodaj te zmienne do stanu komponentu
+    const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
 
     useEffect(() => {
@@ -102,16 +103,13 @@ const Health = () => {
             // Pobierz aktualną datę i czas
             const currentDate = new Date();
             const selectedDate = new Date(currentDate);
-            const selectedHour = selectedTime;
+            const selectedHour = isTimePickerVisible ? selectedTime : currentDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 
             // Porównaj wybraną godzinę z aktualną godziną
             const currentHour = currentDate.getHours();
             const selectedHourInt = parseInt(selectedHour.split(":")[0], 10); // Pobierz godzinę z czasu i przekształć na liczbę
 
-            if (selectedHourInt > currentHour) {
-                // Wybrana godzina jest wcześniejsza niż aktualna
-                window.alert("Nie możesz wybrać późniejszej godziny niż obecna.");
-            } else {
+            if (isTimePickerVisible && selectedHourInt > currentHour) {
                 // Pobierz dzień, miesiąc, rok, godzinę i minutę
                 const day = selectedDate.getDate();
                 const month = selectedDate.getMonth() + 1; // Miesiące są od 0 do 11, więc dodajemy 1
@@ -140,13 +138,12 @@ const Health = () => {
                         checkedTime: formattedTime,
                     });
                 } else {
-
                     await addDoc(medicationsRef, {
                         email,
                         medicationName: selectedMedication,
                         checkedDate: formattedDate,
                         checkedTime: formattedTime,
-                    })
+                    });
 
                     // Jeśli lek istnieje, zmniejsz wartość w polu "tabletsCount" o 1
                     lekiSnapshot.forEach(async (lekDoc) => {
@@ -163,6 +160,26 @@ const Health = () => {
                 // Zresetuj stan wybranych leków i godziny
                 setSelectedProducts([]);
                 setSelectedTime("");
+                setTimePickerVisibility(false);
+
+                // Wyświetl alert
+                window.alert('Dane zostały zapisane.');
+            } else {
+                // Dodaj aktualną datę i godzinę
+                const formattedDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+                const formattedTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+
+                await addDoc(medicationsRef, {
+                    email,
+                    medicationName: selectedMedication,
+                    checkedDate: formattedDate,
+                    checkedTime: formattedTime,
+                });
+
+                // Zresetuj stan wybranych leków i godziny
+                setSelectedProducts([]);
+                setSelectedTime("");
+                setTimePickerVisibility(false);
 
                 // Wyświetl alert
                 window.alert('Dane zostały zapisane.');
@@ -171,8 +188,6 @@ const Health = () => {
             console.error('Błąd podczas zapisywania danych do Firebase:', error);
         }
     };
-
-
 
     return (
         <div className={`main-view ${isSidebarOpen ? "sidebar-open" : ""}`}>
@@ -196,7 +211,7 @@ const Health = () => {
 
             <div className="content with-background">
                 <h1> </h1>
-                <div className="drug-entry-field">
+                <div className="drug-field">
                     <h2>Wyszukaj lub wybierz lek:</h2>
                     <div className="search-input-container">
                         <input
@@ -227,15 +242,27 @@ const Health = () => {
                         )}
                     </div>
 
-                    <h3>Wybierz godzinę:</h3>
-                    <div className="dose-times time-picker">
-                        <input
-                            type="time"
-                            id="selected-time"
-                            value={selectedTime}
-                            onChange={(e) => setSelectedTime(e.target.value)}
-                        />
-                    </div>
+                    <h3>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={isTimePickerVisible}
+                                onChange={() => setTimePickerVisibility(!isTimePickerVisible)}
+                            />
+                            Wybierz godzinę:
+                        </label>
+                    </h3>
+
+                    {isTimePickerVisible && (
+                        <div className="dose-times time-picker">
+                            <input
+                                type="time"
+                                id="selected-time"
+                                value={selectedTime}
+                                onChange={(e) => setSelectedTime(e.target.value)}
+                            />
+                        </div>
+                    )}
 
                     <button id="save-button" onClick={handleSaveToFirestore}>
                         Zatwierdź
@@ -249,4 +276,4 @@ const Health = () => {
     );
 };
 
-export default Health;
+export default DrugOnce;

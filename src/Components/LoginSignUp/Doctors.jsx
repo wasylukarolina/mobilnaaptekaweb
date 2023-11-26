@@ -88,15 +88,17 @@ const Doctors = () => {
             const doctorDocSnapshot = await getDoc(doctorDocRef);
 
             // Sprawdź, czy aktualny użytkownik jest już w pacjentach lekarza
-            if (!doctorDocSnapshot.data().patients.includes(auth.currentUser.email)) {
+            if (!doctorDocSnapshot.data()?.patients.includes(auth.currentUser.email)) {
                 // Jeśli dokument nie istnieje, dodaj go
                 if (!doctorDocSnapshot.exists()) {
                     await setDoc(doctorDocRef, { patients: [auth.currentUser.email] });
+                    console.log("Utworzono nowego lekarza w tabeli doctors.");
                 } else {
-                    // Jeśli dokument istnieje, zaktualizuj pole pacienta
+                    // Jeśli dokument istnieje, zaktualizuj pole pacjenta
                     await updateDoc(doctorDocRef, {
                         patients: [...doctorDocSnapshot.data().patients, auth.currentUser.email]
                     });
+                    console.log("Zaktualizowano dane lekarza w tabeli doctors.");
                 }
 
                 console.log("Udostępniono dane lekarzowi");
