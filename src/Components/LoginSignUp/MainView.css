@@ -4,18 +4,20 @@
 .main-view {
     background: white;
     height: 100vh; /* Wysokość na 100% wysokości widoku (viewport height) */
+    overflow: hidden; /* Ukryj ewentualne przepełnienie */
 }
 
 .with-background {
     background-image: url('../Assets/logo.png');
-    background-size: 1300px 1300px; /* Dostosuj rozmiar obrazu */
+    background-size: contain; /* Dostosuj rozmiar obrazu do kontenera, zachowaj proporcje */
     background-repeat: no-repeat;
-    background-position: right -70px bottom -80px; /* Przesunięcie w prawo i w dół */
+    background-position: center; /* Wyśrodkuj obraz */
+    height: calc(100vh - 16px); /* Ustaw wysokość na 100% widoku minus ewentualne przesunięcia */
+    margin-bottom: 16px; /* Zapobiegaj występowaniu białego paska na dole poprzez dodanie marginesu */
 }
-
-
 img {
-    margin: 0px 0px;
+    display: block;
+    margin: auto;
     width: 50px;
     height: 50px;
 }

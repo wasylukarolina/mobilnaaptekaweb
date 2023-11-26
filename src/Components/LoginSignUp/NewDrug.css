@@ -16,21 +16,22 @@
 }
 
 .hover-text-container {
-    margin: 5% 0 0 10%;
+    margin: 0 0 0 10vw; /* 5% od góry, 10vw od lewej */
     flex-direction: column;
-    width: 20%;
+    width: 20vw; /* Szerokość 20% szerokości widoku */
     position: absolute;
-    top: 0;
-    right: 10%; /* Lekkie przesunięcie w prawo */
-    height: 70%; /* Ustawienie wysokości zgodnie z drug-entry-field */
+    top: 30%;
+    right: 10vw; /* 10vw od prawej - lekkie przesunięcie w prawo */
+    height: 20vh; /* Wysokość 70% wysokości widoku, zgodnie z drug-entry-field */
     display: flex;
     align-items: center;
     background-color: rgba(245, 245, 245, 0.5); /* Szare tło z 50% przezroczystości */
     border-radius: 10px; /* Zastosuj zaokrąglenie krawędzi */
     border: 1px solid #AD4027;
-    justify-content: center; /* */
+    justify-content: center;
     background-clip: padding-box;
 }
+
 
 .hover-text {
     background-color: transparent;
@@ -38,8 +39,11 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     position: absolute;
-    top: 190px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
+
 
 .hover-text2 {
     background-color: transparent;
@@ -47,7 +51,9 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     position: absolute;
-    top: 390px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .hover-text3 {
@@ -56,7 +62,9 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     position: absolute;
-    top: 480px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .hover-text-container:hover .hover-text {
