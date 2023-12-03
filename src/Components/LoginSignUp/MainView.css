@@ -127,3 +127,105 @@ img {
     padding: 20px;
     background-color: white;
 }
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: rgba(255, 255, 255, 0.9); /* Białe tło z przezroczystością */
+    border: 1px solid #356F90; /* Niebieska obramówka */
+    border-radius: 10px; /* Zaokrąglone rogi */
+    padding: 20px;
+    text-align: center;
+    z-index: 1000; /* Ustaw wysoki index warstwy dla modala */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal > * {
+    margin: 10px 0; /* Dostosuj odstęp według własnych preferencji */
+}
+
+.modal-content {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.modal h2 {
+    color: #356F90; /* Kolor tytułu */
+}
+
+
+.modal button {
+    display: block;
+    border: 1px solid #356F90;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 40px;
+    background-color: white;
+    color: #356F90;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
+}
+/* Dodaj do istniejących stylów */
+
+.modal button:hover {
+    border: 1px solid #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #AD4027;
+    transition: 0.3s; /* Dodaj płynność do efektu */
+}
+
+/* Dodaj do istniejących stylów */
+
+.button {
+    display: inline-block; /* Zmieniono display na inline-block */
+    border: 1px solid #356F90;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    background-color: white;
+    color: #356F90;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+
+/* Dodaj do istniejących stylów */
+
+.button:hover {
+    border: 1px solid #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #AD4027;
+    transition: 0.3s; /* Dodaj płynność do efektu */
+}
+
+.patient-medications {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* Inne istniejące style dla diva */
+}
