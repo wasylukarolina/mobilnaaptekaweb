@@ -137,7 +137,7 @@ const MainView = () => {
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
             });
-        getNotTakenYesterdayMedications();
+
     }, [auth.currentUser.email]);
 
     const handleLogout = async () => {
