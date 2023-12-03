@@ -557,7 +557,10 @@ const NewDrug = () => {
 
                 </div>
 
+
                 <div className="hover-text-container">
+                    <h2>Instrukcje</h2>
+
                     {isHoveredSearchInput && (
                         <div className="hover-text">Wpisz nazwę regularnie branego leku</div>
                     )}

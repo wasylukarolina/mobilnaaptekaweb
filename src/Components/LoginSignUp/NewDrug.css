@@ -16,7 +16,7 @@
 }
 
 .hover-text-container {
-    margin: 0 0 0 10vw; /* 5% od góry, 10vw od lewej */
+    margin: 0 auto; /* Ustaw marginesy poziome na auto, aby umieścić w środku */
     flex-direction: column;
     width: 20vw; /* Szerokość 20% szerokości widoku */
     position: absolute;
@@ -24,12 +24,17 @@
     right: 10vw; /* 10vw od prawej - lekkie przesunięcie w prawo */
     height: 20vh; /* Wysokość 70% wysokości widoku, zgodnie z drug-entry-field */
     display: flex;
-    align-items: center;
+    align-items: center; /* Wyśrodkuj zawartość w pionie na środku */
     background-color: rgba(245, 245, 245, 0.5); /* Szare tło z 50% przezroczystości */
     border-radius: 10px; /* Zastosuj zaokrąglenie krawędzi */
     border: 1px solid #AD4027;
     justify-content: center;
     background-clip: padding-box;
+}
+
+/* Dodaj styl dla h2 */
+.hover-text-container h2 {
+    margin-bottom: auto; /* Ustaw margines na auto, aby przesunąć tekst na górę */
 }
 
 
