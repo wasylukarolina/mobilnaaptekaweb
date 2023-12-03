@@ -124,7 +124,7 @@ const MainView = () => {
                         parseInt(timeParts[0]), // Godzina
                         parseInt(timeParts[1]) // Minuta
                     );
-                    const end = new Date(start.getTime() + 60 * 60 * 1000); // Załóżmy, że wydarzenia trwają godzinę
+                    const end = new Date(start.getTime() + 60 * 1000); // Załóżmy, że wydarzenia trwają minutę
 
                     events.push({
                         title: medicationName,
@@ -133,6 +133,56 @@ const MainView = () => {
                     });
                 });
                 setEvents(events);
+            })
+
+        const anotherQuery = query(medicationsRef2, where("email", "==", email));
+        // Drugi blok getDocs
+        getDocs(anotherQuery)
+            .then((anotherQuerySnapshot) => {
+                const events = [];
+
+                anotherQuerySnapshot.forEach((doc) => {
+                    const medicationData = doc.data();
+                    const { medicationName, checkedDate, checkedTime, actualTime } = medicationData;
+
+                    // Przetwórz datę i godzinę na obiekt Date
+                    const dateParts = checkedDate.split("/"); // Załóżmy, że data jest w formacie dd/mm/yyyy
+                    const checkedTimeParts = checkedTime.split(":");
+
+                    // Dodaj sprawdzenie, czy pole actualTime istnieje
+                    if (actualTime) {
+                        const actualTimeParts = actualTime.split(":");
+                        const checkedStart = new Date(
+                            parseInt(dateParts[2]), // Rok
+                            parseInt(dateParts[1]) - 1, // Miesiąc (odejmujemy 1, bo miesiące są od 0 do 11)
+                            parseInt(dateParts[0]), // Dzień
+                            parseInt(checkedTimeParts[0]), // Godzina
+                            parseInt(checkedTimeParts[1]) // Minuta
+                        );
+
+                        const actualStart = new Date(
+                            parseInt(dateParts[2]), // Rok
+                            parseInt(dateParts[1]) - 1, // Miesiąc (odejmujemy 1, bo miesiące są od 0 do 11)
+                            parseInt(dateParts[0]), // Dzień
+                            parseInt(actualTimeParts[0]), // Godzina
+                            parseInt(actualTimeParts[1]) // Minuta
+                        );
+
+                        // Przyjmuj tylko wydarzenia, których różnica między actualTime a checkedTime wynosi 1 godzinę lub więcej
+                        const timeDifferenceMinutes = (actualStart.getTime() - checkedStart.getTime()) / (60 * 1000);
+                        console.log(`Różnica czasu dla leku ${medicationName}: ${timeDifferenceMinutes} minut`);
+
+                        if (timeDifferenceMinutes >= 60) {
+                            events.push({
+                                title: `${medicationName} (Late)`,
+                                start: actualStart,
+                                end: new Date(actualStart.getTime() + 60 * 1000), // Załóżmy, że wydarzenia trwają minutę
+                            });
+                        }
+                    }
+                });
+
+                setEvents((prevEvents) => [...prevEvents, ...events]);
             })
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);

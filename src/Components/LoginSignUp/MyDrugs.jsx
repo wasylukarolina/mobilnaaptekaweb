@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import "./MainView.css";
 import menu_icon from "../Assets/menu.png";
 import delete_icon from "../Assets/delete.png";
-
 import './MyDrugs.css';
 
 const MyDrugs = () => {
@@ -135,6 +134,8 @@ const MyDrugs = () => {
 
             // Odczytaj godzinę z `doseKey`
             const selectedTime = doseKey.split("-")[2].replace("_", ":");
+            const actualTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
+
 
             const day = currentDate.getDate();
             const month = currentDate.getMonth() + 1;
@@ -159,6 +160,7 @@ const MyDrugs = () => {
                     medicationName: drug.nazwaProduktu,
                     checkedDate: formattedDate,
                     checkedTime: selectedTime,
+                    actualTime: actualTime,
                 });
             } else {
                 // Usuń dokument, jeśli istnieje
@@ -261,7 +263,7 @@ const MyDrugs = () => {
 
             <div className="content with-background">
                 <h1>Moje leki</h1>
-                <div className="drug-field">
+                <div className="drug-field2">
                     <ul>
                         {userDrugs.map((drug, index) => (
                             <li

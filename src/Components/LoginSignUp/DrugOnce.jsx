@@ -211,7 +211,7 @@ const DrugOnce = () => {
 
             <div className="content with-background">
                 <h1> </h1>
-                <div className="drug-field">
+                <div className="drug-field2">
                     <h2>Wyszukaj lub wybierz lek:</h2>
                     <div className="search-input-container">
                         <input
