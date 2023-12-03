@@ -20,6 +20,7 @@ const MyDrugs = () => {
     const [isChecked, setIsChecked] = useState({}); // Zmieniono na obiekt
 
 
+
     const currentDate = new Date();
     const day = currentDate.getDate();
     const month = currentDate.getMonth() + 1;

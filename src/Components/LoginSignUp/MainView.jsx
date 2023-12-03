@@ -12,19 +12,72 @@ import moment from "moment";
 import './CalendarStyles.css'; // Importuj plik ze stylami kalendarza
 
 
-
-
 const MainView = () => {
     const navigate = useNavigate();
     const [nickname, setNickname] = useState("");
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [events, setEvents] = useState([]); // Dodaj stan events
+    const [patientMedications, setPatientMedications] = useState([]); // Dodaj stan dla leków pacjenta
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-GB'); // Format dd/mm/yyyy
+
 
     useEffect(() => {
         const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
-        const medicationsRef = collection(db, "checkedMedications");
-        const q = query(medicationsRef, where("email", "==", email));
+
+        // Pobierz leki pacjenta
+        const medicationsRef = collection(db, "leki");
+        const medicationsQuery = query(medicationsRef, where("email", "==", email));
+
+        getDocs(medicationsQuery)
+            .then((querySnapshot) => {
+                const medications = [];
+                querySnapshot.forEach((doc) => {
+                    const medicationData = doc.data();
+                    medications.push(medicationData);
+                });
+
+                // Pobierz historię brania leków dzisiaj
+                const today = new Date();
+                const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+
+                const checkedMedicationsRef = collection(db, "checkedMedications");
+                const checkedMedicationsQuery = query(
+                    checkedMedicationsRef,
+                    where("email", "==", email),
+                    where("checkedDate", "==", formattedDate)
+                );
+
+                return getDocs(checkedMedicationsQuery)
+                    .then((querySnapshot) => {
+                        const takenMedications = new Set();
+
+                        querySnapshot.forEach((doc) => {
+                            const medicationData = doc.data();
+                            const medicationName = medicationData.medicationName;
+
+                            takenMedications.add(medicationName);
+                        });
+
+                        // Filtruj leki pacjenta, pomijając te, które zostały już wzięte dzisiaj
+                        const remainingMedications = medications.filter(
+                            (medication) => !takenMedications.has(medication.nazwaProduktu)
+                        );
+
+                        setPatientMedications(remainingMedications);
+                    })
+                    .catch((error) => {
+                        console.error("Błąd podczas pobierania historii brania leków z Firestore:", error);
+                    });
+            })
+
+            .catch((error) => {
+                console.error("Błąd podczas pobierania leków pacjenta z Firestore:", error);
+            });
+
+        const medicationsRef2 = collection(db, "checkedMedications");
+        const q = query(medicationsRef2, where("email", "==", email));
 
         getDocs(q)
             .then((querySnapshot) => {
@@ -56,7 +109,7 @@ const MainView = () => {
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
             });
-    }, []);
+    }, [auth.currentUser.email]);
 
     const handleLogout = async () => {
         try {
@@ -76,13 +129,26 @@ const MainView = () => {
 
     const MyCalendar = () => {
         return (
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500 }} // Dostosuj wysokość kalendarza do swoich potrzeb
-            />
+            <>
+                <div className="patient-medications">
+                    <h3>Leki pacjenta:</h3>
+                    <ul>
+                        {patientMedications.map((medication, index) => (
+                            <li key={index}>
+                                {medication.nazwaProduktu} - {medication.dawkowanie}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ height: 500 }}
+                />
+            </>
         );
     };
 
