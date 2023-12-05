@@ -52,7 +52,6 @@ const LoginSignup = () => {
                 userId: userId,
                 nickname: nickname,
                 email: email,
-                // Dodaj inne dane, które chcesz przekazać
             };
 
             // Sprawdź, czy adres e-mail zawiera "@lekarz.pl"
@@ -64,10 +63,14 @@ const LoginSignup = () => {
             // Dodaj dokument do kolekcji "users"
             await addDoc(usersCollection, userData);
 
-            setAction("Logowanie"); // Przekierowanie na stronę logowania
+
             setEmail("");
             setPassword("");
             setNickname("");
+
+            navigate('/'); // Zakładam, że "/" to ścieżka do tego samego komponentu z widokiem logowania/rejestracji
+
+
         } catch (error) {
             console.error(error);
         }

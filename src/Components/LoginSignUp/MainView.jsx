@@ -254,14 +254,14 @@ const MainView = () => {
             );
 
             const querySnapshotYesterday = await getDocs(checkedMedicationsQueryYesterday);
-            const takenYesterday = [];
+            const takenYesterday = new Set();
             querySnapshotYesterday.forEach((doc) => {
                 const medicationData = doc.data();
-                takenYesterday.push(medicationData.medicationName);
+                takenYesterday.add(medicationData.medicationName);
             });
 
             const notTakenYesterdayMedications = medications.filter(
-                (medication) => !isDoseTakenYesterday(medication.nazwaProduktu, medication.dawkowanie[0])
+                (medication) => !takenYesterday.has(medication.nazwaProduktu)
             );
 
             openNotTakenYesterdayModal(notTakenYesterdayMedications);
@@ -269,6 +269,7 @@ const MainView = () => {
             console.error("Błąd podczas pobierania leków pacjenta:", error);
         }
     };
+
 
 
     const openNotTakenYesterdayModal = (notTakenYesterdayMedications) => {
@@ -283,21 +284,17 @@ const MainView = () => {
 
     const generateMedicationList = (medication) => {
         const medicationList = [];
+
         medication.dawkowanie.forEach((dose, doseIndex) => {
             const doseWithTime = `${medication.nazwaProduktu} - ${dose}`;
-            const isDoseTaken = isDoseTakenToday(medication.nazwaProduktu, dose);
+            const doseKey = `single-dose-${medication.nazwaProduktu}-${doseIndex}`;
 
-            // Dodaj warunek sprawdzający, czy dawka została wzięta
-            if (!isDoseTaken) {
-                medicationList.push(doseWithTime);
-            }
+            medicationList.push(
+                <li key={doseKey}>
+                    {doseWithTime}
+                </li>
+            );
         });
-
-        // Jeśli lek ma tylko jedną wartość w polu dawkowanie, dodaj ją do listy bez dodatkowych sprawdzeń
-        if (medication.dawkowanie.length === 1) {
-            const doseWithTime = `${medication.nazwaProduktu} - ${medication.dawkowanie[0]}`;
-            medicationList.push(doseWithTime);
-        }
 
         return medicationList;
     };
@@ -305,10 +302,17 @@ const MainView = () => {
 
 
     const isDoseTakenToday = (medicationName, dose) => {
+        const todayMidnight = new Date();
+        todayMidnight.setHours(0, 0, 0, 0);
+
         return events.some(
-            (event) => event.title === medicationName && moment(event.start).format("HH:mm") === dose
+            (event) =>
+                event.title === medicationName &&
+                moment(event.start).format("HH:mm") === dose &&
+                moment(event.start).isAfter(todayMidnight)
         );
     };
+
 
     const handleCheckboxChangeMainView = async (medication, doseIndex) => {
         try {
@@ -396,12 +400,11 @@ const MainView = () => {
                     <h3>Leki pacjenta:</h3>
                     <ul>
                         {patientMedications.map((medication, index) => (
-                            generateMedicationList(medication).map((doseWithTime, doseIndex) => (
-                                <li key={`${index}-${doseIndex}`}>
-                                    {doseWithTime}
-                                </li>
-                            ))
+                            <li key={`${index}`}>
+                                {generateMedicationList(medication)}
+                            </li>
                         ))}
+
                     </ul>
 
 
