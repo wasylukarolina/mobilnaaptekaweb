@@ -1,6 +1,6 @@
 /* NewDrug.css */
 .input-container input {
-    width: 500px; /* Ustaw stałą szerokość */
+    width: 550px; /* Ustaw stałą szerokość */
     height: 30px; /* Ustaw wysokość */
     padding: 5px; /* Dodaj wewnętrzny odstęp */
     border: 1px solid #ccc; /* Dodaj obramowanie */
@@ -108,7 +108,7 @@
     width: 50%;
     border: 1px solid #AD4027;
     background-clip: padding-box; /* Zapobiegnij rozmyciu tła w obramówce */
-    height: 70%;
+    height: 80%;
 }
 
 .search-input-container {

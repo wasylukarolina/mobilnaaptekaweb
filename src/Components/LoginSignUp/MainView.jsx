@@ -397,16 +397,20 @@ const MainView = () => {
                 </h1>
 
                 <div className="patient-medications">
-                    <h3>Leki pacjenta:</h3>
-                    <ul>
-                        {patientMedications.map((medication, index) => (
-                            <li key={`${index}`}>
-                                {generateMedicationList(medication)}
-                            </li>
-                        ))}
 
-                    </ul>
 
+                    <div className="medications">
+                        <h3>Leki pacjenta:</h3>
+                        <ul>
+                            {patientMedications.map((medication, index) => (
+                                <li key={`${index}`}>
+                                    {generateMedicationList(medication)}
+                                </li>
+                            ))}
+
+                        </ul>
+
+                    </div>
 
 
                     <button className="button" onClick={getNotTakenYesterdayMedications}>Leki, których nie wzięto wczoraj</button>

@@ -229,3 +229,19 @@ img {
     text-align: center;
     /* Inne istniejące style dla diva */
 }
+
+.medications {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Ustawienie na górę wzdłuż osi pionowej */
+    align-items: center;
+    width: 400px;
+    margin: 20px auto; /* Automatyczne ustawienie marginesów na górze i dołu */
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #356F90;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
