@@ -416,11 +416,13 @@ const NewDrug = () => {
                             const newValue = parseInt(e.target.value, 10);
                             // Ograniczenie liczby godzin między dawkami w zależności od liczby dawek
                             const maxInterval = doseCount > 1 ? 24 / doseCount : 24;
-                            if (!isNaN(newValue) && newValue >= 0 && newValue <= maxInterval) {
+                            // Liczba musi być co najmniej 1
+                            if (!isNaN(newValue) && newValue >= 1 && newValue <= maxInterval) {
                                 setInterval(newValue);
                             }
                         }}
                     />
+
                 </>
             );
         } else {
