@@ -50,156 +50,211 @@ const MainView = () => {
         const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
 
-        // Pobierz leki pacjenta
         const medicationsRef = collection(db, "leki");
         const medicationsQuery = query(medicationsRef, where("email", "==", email));
 
-        getDocs(medicationsQuery)
-            .then((querySnapshot) => {
-                const medications = [];
-                querySnapshot.forEach((doc) => {
-                    const medicationData = doc.data();
-                    medications.push(medicationData);
-                });
+        const checkedMedicationsRef = collection(db, "checkedMedications");
+        const q = query(checkedMedicationsRef, where("email", "==", email));
 
-                console.log("Pobrane leki pacjenta:", medications);
-
-
-                // Pobierz historię brania leków dzisiaj
-                const today = new Date();
-                const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-
-                const checkedMedicationsRef = collection(db, "checkedMedications");
-                const checkedMedicationsQuery = query(
-                    checkedMedicationsRef,
-                    where("email", "==", email),
-                    where("checkedDate", "==", formattedDate)
-                );
-
-                return getDocs(checkedMedicationsQuery)
-                    .then((querySnapshot) => {
-                        const takenMedications = new Map(); // Używamy Map zamiast Set do przechowywania informacji o dawkowaniach
-
-                        querySnapshot.forEach((doc) => {
-                            const medicationData = doc.data();
-                            const medicationName = medicationData.medicationName;
-                            const checkedDose = medicationData.checkedDose || 1; // Jeśli dawka nie istnieje, przyjmujemy 1
-
-                            if (!takenMedications.has(medicationName)) {
-                                takenMedications.set(medicationName, checkedDose);
-                            } else {
-                                takenMedications.set(medicationName, takenMedications.get(medicationName) + checkedDose);
-                            }
-                        });
-
-                        // Filtruj leki pacjenta, uwzględniając dawkowanie
-                        const remainingMedications = medications.filter((medication) => {
-                            const takenDose = takenMedications.get(medication.nazwaProduktu) || 0;
-                            const requiredDose = medication.dawkowanie.length || 1;
-
-                            return takenDose < requiredDose;
-                        });
-
-                        console.log("Pozostałe leki pacjenta:", remainingMedications);
-
-                        setPatientMedications(remainingMedications);
-                    })
-                    .catch((error) => {
-                        console.error("Błąd podczas pobierania historii brania leków z Firestore:", error);
-                    });
-            })
-            .catch((error) => {
-                console.error("Błąd podczas pobierania leków pacjenta z Firestore:", error);
-            });
-
-
-
-
-        const medicationsRef2 = collection(db, "checkedMedications");
-        const q = query(medicationsRef2, where("email", "==", email));
-
-        getDocs(q)
-            .then((querySnapshot) => {
-                const events = [];
-                querySnapshot.forEach((doc) => {
-                    const medicationData = doc.data();
-                    const { medicationName, checkedDate, checkedTime } = medicationData;
-
-                    // Przetwórz datę i godzinę na obiekt Date
-                    const dateParts = checkedDate.split("/"); // Załóżmy, że data jest w formacie dd/mm/yyyy
-                    const timeParts = checkedTime.split(":");
-                    const start = new Date(
-                        parseInt(dateParts[2]), // Rok
-                        parseInt(dateParts[1]) - 1, // Miesiąc (odejmujemy 1, bo miesiące są od 0 do 11)
-                        parseInt(dateParts[0]), // Dzień
-                        parseInt(timeParts[0]), // Godzina
-                        parseInt(timeParts[1]) // Minuta
-                    );
-                    const end = new Date(start.getTime() + 60 * 1000); // Załóżmy, że wydarzenia trwają minutę
-
-                    events.push({
-                        title: medicationName,
-                        start,
-                        end,
-                    });
-                });
-                setEvents(events);
-            })
-
-        const anotherQuery = query(medicationsRef2, where("email", "==", email));
-        // Drugi blok getDocs
-        getDocs(anotherQuery)
-            .then((anotherQuerySnapshot) => {
+        Promise.all([getDocs(medicationsQuery), getDocs(q)])
+            .then(([medicationsSnapshot, checkedMedicationsSnapshot]) => {
                 const events = [];
 
-                anotherQuerySnapshot.forEach((doc) => {
+                medicationsSnapshot.forEach((doc) => {
+                    const medicationData = doc.data();
+                    const { nazwaProduktu, dawkowanie } = medicationData;
+
+                    dawkowanie.forEach((dose) => {
+                        const [hours, minutes] = dose.split(":");
+                        const doseTime = new Date();
+                        doseTime.setHours(hours, minutes, 0, 0);
+
+                        const currentTime = new Date();
+                        if (currentTime > doseTime) {
+                            events.push({
+                                title: `${nazwaProduktu} (notTakenLate)`,
+                                start: doseTime,
+                                end: new Date(doseTime.getTime() + 60 * 1000),
+                            });
+                        } else {
+                            events.push({
+                                title: `${nazwaProduktu} (notTaken)`,
+                                start: doseTime,
+                                end: new Date(doseTime.getTime() + 60 * 1000),
+                            });
+                        }
+                    });
+                });
+
+                checkedMedicationsSnapshot.forEach((doc) => {
                     const medicationData = doc.data();
                     const { medicationName, checkedDate, checkedTime, actualTime } = medicationData;
 
-                    // Przetwórz datę i godzinę na obiekt Date
-                    const dateParts = checkedDate.split("/"); // Załóżmy, że data jest w formacie dd/mm/yyyy
+                    const dateParts = checkedDate.split("/");
                     const checkedTimeParts = checkedTime.split(":");
+                    const checkedStart = new Date(
+                        parseInt(dateParts[2]),
+                        parseInt(dateParts[1]) - 1,
+                        parseInt(dateParts[0]),
+                        parseInt(checkedTimeParts[0]),
+                        parseInt(checkedTimeParts[1])
+                    );
 
-                    // Dodaj sprawdzenie, czy pole actualTime istnieje
                     if (actualTime) {
                         const actualTimeParts = actualTime.split(":");
-                        const checkedStart = new Date(
-                            parseInt(dateParts[2]), // Rok
-                            parseInt(dateParts[1]) - 1, // Miesiąc (odejmujemy 1, bo miesiące są od 0 do 11)
-                            parseInt(dateParts[0]), // Dzień
-                            parseInt(checkedTimeParts[0]), // Godzina
-                            parseInt(checkedTimeParts[1]) // Minuta
-                        );
-
                         const actualStart = new Date(
-                            parseInt(dateParts[2]), // Rok
-                            parseInt(dateParts[1]) - 1, // Miesiąc (odejmujemy 1, bo miesiące są od 0 do 11)
-                            parseInt(dateParts[0]), // Dzień
-                            parseInt(actualTimeParts[0]), // Godzina
-                            parseInt(actualTimeParts[1]) // Minuta
+                            parseInt(dateParts[2]),
+                            parseInt(dateParts[1]) - 1,
+                            parseInt(dateParts[0]),
+                            parseInt(actualTimeParts[0]),
+                            parseInt(actualTimeParts[1])
                         );
 
-                        // Przyjmuj tylko wydarzenia, których różnica między actualTime a checkedTime wynosi 1 godzinę lub więcej
                         const timeDifferenceMinutes = (actualStart.getTime() - checkedStart.getTime()) / (60 * 1000);
-                        console.log(`Różnica czasu dla leku ${medicationName}: ${timeDifferenceMinutes} minut`);
 
                         if (timeDifferenceMinutes >= 60) {
                             events.push({
                                 title: `${medicationName} (Late)`,
                                 start: actualStart,
-                                end: new Date(actualStart.getTime() + 60 * 1000), // Załóżmy, że wydarzenia trwają minutę
+                                end: new Date(actualStart.getTime() + 60 * 1000),
+                            });
+                        } else {
+                            // Dodaj warunek, który sprawdzi, czy istnieje (notTaken) lub (notTakenLate) i usuwa go
+                            const index = events.findIndex(
+                                (event) =>
+                                    event.title === `${medicationName} (notTaken)` ||
+                                    event.title === `${medicationName} (notTakenLate)`
+                            );
+                            if (index !== -1) {
+                                events.splice(index, 1);
+                            }
+
+                            // Dodaj (onTime) zamiast (notTaken) lub (notTakenLate)
+                            events.push({
+                                title: `${medicationName} (onTime)`,
+                                start: checkedStart,
+                                end: new Date(checkedStart.getTime() + 60 * 1000),
                             });
                         }
+                    } else {
+                        // Jeśli actualTime nie istnieje, traktuj to jako (onTime)
+                        events.push({
+                            title: `${medicationName} (onTime)`,
+                            start: checkedStart,
+                            end: new Date(checkedStart.getTime() + 60 * 1000),
+                        });
                     }
                 });
 
-                setEvents((prevEvents) => [...prevEvents, ...events]);
+                setEvents(events);
             })
             .catch((error) => {
                 console.error("Błąd podczas pobierania danych z Firestore:", error);
             });
-
     }, [auth.currentUser.email]);
+
+
+    const MyCalendar = () => {
+        const eventStyleGetter = (event, start, end, isSelected) => {
+            const medicationName = event.title.replace(" (Late)", ""); // Remove "(Late)" before checking on the patient's medication list
+
+            // Check if the medication is on the patient's medication list to be taken
+            const isMedicationInList = patientMedications.some(
+                (medication) => medication.nazwaProduktu === medicationName
+            );
+
+            // Check if the medication has "(Late)" in the title
+            if (event.title.includes("(Late)")) {
+                // Display in yellow
+                return {
+                    style: {
+                        backgroundColor: "yellow",
+                        borderRadius: "5px",
+                        opacity: 0.8,
+                        color: "black",
+                        border: "1px solid yellow",
+                        display: "block",
+                        cursor: "pointer",
+                    },
+                };
+            }
+
+            // Check if the medication has "(onTime)" in the title
+            if (event.title.includes("(onTime)")) {
+                // Display in green
+                return {
+                    style: {
+                        backgroundColor: "green",
+                        borderRadius: "5px",
+                        opacity: 0.8,
+                        color: "white",
+                        border: "1px solid green",
+                        display: "block",
+                        cursor: "pointer",
+                    },
+                };
+            }
+
+            // Check if the medication has "(notTaken)" in the title
+            if (event.title.includes("(notTaken)")) {
+                // Display in gray
+                return {
+                    style: {
+                        backgroundColor: "grey",
+                        borderRadius: "5px",
+                        opacity: 0.8,
+                        color: "white",
+                        border: "1px solid grey",
+                        display: "block",
+                        cursor: "pointer",
+                    },
+                };
+            }
+
+            // Check if the medication has "(notTakenLate)" in the title
+            if (event.title.includes("(notTakenLate)")) {
+                // Display in black with white text
+                return {
+                    style: {
+                        backgroundColor: "black",
+                        borderRadius: "5px",
+                        opacity: 0.8,
+                        color: "white",
+                        border: "1px solid black",
+                        display: "block",
+                        cursor: "pointer",
+                    },
+                };
+            }
+
+            // If none of the above conditions are met, use the default style (in red)
+            return {
+                style: {
+                    backgroundColor: "red",
+                    borderRadius: "5px",
+                    opacity: 0.8,
+                    color: "white",
+                    border: "1px solid #3174ad",
+                    display: "block",
+                    cursor: "pointer",
+                },
+            };
+        };
+
+
+        return (
+            <Calendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 500 }}
+                eventPropGetter={eventStyleGetter}
+            />
+        );
+    };
+
+
 
     const handleLogout = async () => {
         try {
@@ -217,21 +272,7 @@ const MainView = () => {
 
     const localizer = momentLocalizer(moment);
 
-    const MyCalendar = () => {
-        return (
-            <>
 
-
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 500 }}
-                />
-            </>
-        );
-    };
 
     const isDoseTakenYesterday = (medicationName, dose) => {
         return events.some(

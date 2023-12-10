@@ -322,7 +322,7 @@ const MyDrugs = () => {
 
                         </div>
 
-                        <div className="close-button">
+                        <div className="close-button-MOD">
                             <button onClick={() => setSelectedDrug(null)}>Zamknij</button>
                         </div>
                     </div>

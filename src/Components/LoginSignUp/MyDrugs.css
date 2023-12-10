@@ -82,7 +82,7 @@ ul li {
     color: #356F90; /* Kolor tytułu */
 }
 
-.close-button button {
+.close-button-MOD button {
     display: flex;
     border: 1px solid #356F90;
     outline: none;
@@ -103,7 +103,7 @@ ul li {
     text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.close-button button:hover {
+.close-button-MOD button:hover {
     border: 1px solid #AD4027;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     color: #AD4027;
