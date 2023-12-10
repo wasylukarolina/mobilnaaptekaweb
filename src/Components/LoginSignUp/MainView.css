@@ -160,8 +160,79 @@ img {
     color: #356F90; /* Kolor tytułu */
 }
 
+.react-datepicker-wrapper .react-datepicker__input-container input {
+    /* Dostosuj styl inputa, jeśli to konieczne */
+}
 
-.modal button {
+.react-datepicker {
+    font-family: inherit;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.react-datepicker__header {
+    background-color: #356F90;
+    color: white;
+}
+
+.react-datepicker__day {
+    color: #333;
+}
+
+.react-datepicker__day--selected {
+    background-color: #356F90;
+    color: white;
+}
+
+.react-datepicker__navigation {
+    background-color: #356F90;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.react-datepicker__navigation--next {
+    right: 10px;
+}
+
+.react-datepicker__navigation--previous {
+    left: 10px;
+}
+
+.react-datepicker__time-list {
+    list-style: none;
+    padding: 0;
+}
+
+.react-datepicker__time-list-item {
+    margin: 0;
+    padding: 8px;
+    cursor: pointer;
+    background-color: #356F90;
+    color: white;
+    border: 1px solid #356F90;
+    border-radius: 4px;
+}
+
+.react-datepicker__time-list-item:hover {
+    background-color: #24496d;
+}
+
+/* Dodaj do istniejących stylów */
+
+.modal button:hover {
+    border: 1px solid #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #AD4027;
+    transition: 0.3s; /* Dodaj płynność do efektu */
+}
+
+/* Dodaj do istniejących stylów */
+
+.close-button {
     display: block;
     border: 1px solid #356F90;
     outline: none;
@@ -180,16 +251,33 @@ img {
     margin: 20px auto;
     text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
 }
-/* Dodaj do istniejących stylów */
 
-.modal button:hover {
-    border: 1px solid #AD4027;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    color: #AD4027;
-    transition: 0.3s; /* Dodaj płynność do efektu */
+.add-button {
+    display: block;
+    border: 1px solid #356F90;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 40px;
+    background-color: white;
+    color: #356F90;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-/* Dodaj do istniejących stylów */
+.add-button:disabled {
+    background-color: #ddd; /* Kolor tła dla przycisku w stanie disabled */
+    color: #aaa; /* Kolor tekstu dla przycisku w stanie disabled */
+    cursor: not-allowed; /* Zmiana kursora na "not-allowed" w stanie disabled */
+    border-color: #ccc; /* Kolor obramowania dla przycisku w stanie disabled */
+}
 
 .button {
     display: inline-block; /* Zmieniono display na inline-block */
@@ -228,4 +316,74 @@ img {
     justify-content: center;
     text-align: center;
     /* Inne istniejące style dla diva */
+}
+
+.medication-picker-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    text-align: center;
+    height: 10px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    border: 1px solid #356F90;
+    margin-bottom: 20px; /* Dodaj odstęp na dole */
+}
+
+.medication-picker-container:hover {
+    border-color: #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.medication-picker-container select {
+    height: 40px;
+    width: 90%;
+    border: none;
+    background-color: transparent;
+    padding: 10px;
+    font-size: 18px;
+    color: #356F90;
+    outline: none;
+}
+
+.date-time-picker-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto;
+    width: 80%;
+    text-align: center;
+    height: 20px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    border: 1px solid #356F90;
+}
+
+.date-time-picker-container:hover {
+    border-color: #AD4027;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.date-time-picker-container .react-datepicker-wrapper,
+.date-time-picker-container .react-datepicker__input-container {
+    width: 70%;
+}
+
+.date-time-picker-container input {
+    height: 30px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    padding: 10px;
+    font-size: 18px;
+    color: #356F90;
+    outline: none;
+    margin-top: 10px;
 }

@@ -12,6 +12,14 @@ import moment from "moment";
 import './CalendarStyles.css'; // Importuj plik ze stylami kalendarza
 import './MyDrugs.css';
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale, setDefaultLocale } from "react-datepicker";
+import pl from "date-fns/locale/pl"; // importuj polskie tłumaczenie dla DatePicker
+registerLocale("pl", pl); // zarejestruj polskie tłumaczenie dla DatePicker
+setDefaultLocale("pl"); // ustaw polskie tłumaczenie jako domyślne dla DatePicker
+
+
 const MainView = () => {
     const navigate = useNavigate();
     const [nickname, setNickname] = useState("");
@@ -19,9 +27,12 @@ const MainView = () => {
     const [events, setEvents] = useState([]); // Dodaj stan events
     const [patientMedications, setPatientMedications] = useState([]); // Dodaj stan dla leków pacjenta
     const today = new Date();
-    const [showNotTakenYesterdayModal, setShowNotTakenYesterdayModal] = useState(false);
     const [notTakenYesterdayMedicationsList, setNotTakenYesterdayMedicationsList] = useState([]);
     const [isCheckedMainView, setIsCheckedMainView] = useState({});
+    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+    const [showNotTakenYesterdayModal, setShowNotTakenYesterdayModal] = useState(false);
+    const [selectedMedication, setSelectedMedication] = useState(""); // Dodaj stan dla wybranego leku
+
 
 
     const currentDate = new Date();
@@ -228,11 +239,19 @@ const MainView = () => {
         );
     };
 
+    const handleMedicationChange = (value) => {
+        setSelectedMedication(value);
+    };
+
     const getNotTakenYesterdayMedications = async () => {
         const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
+        const today = new Date();
+
+        // Ustaw datę na wczoraj
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
+
         const formattedYesterday = yesterday.toLocaleDateString('en-GB');
 
         const medicationsRef = collection(db, "leki");
@@ -241,30 +260,15 @@ const MainView = () => {
         try {
             const querySnapshot = await getDocs(medicationsQuery);
             const medications = [];
+
             querySnapshot.forEach((doc) => {
                 const medicationData = doc.data();
                 medications.push(medicationData);
             });
 
-            const checkedMedicationsRefYesterday = collection(db, "checkedMedications");
-            const checkedMedicationsQueryYesterday = query(
-                checkedMedicationsRefYesterday,
-                where("email", "==", email),
-                where("checkedDate", "==", formattedYesterday)
-            );
-
-            const querySnapshotYesterday = await getDocs(checkedMedicationsQueryYesterday);
-            const takenYesterday = new Set();
-            querySnapshotYesterday.forEach((doc) => {
-                const medicationData = doc.data();
-                takenYesterday.add(medicationData.medicationName);
-            });
-
-            const notTakenYesterdayMedications = medications.filter(
-                (medication) => !takenYesterday.has(medication.nazwaProduktu)
-            );
-
-            openNotTakenYesterdayModal(notTakenYesterdayMedications);
+            // Aktualizacja listy leków nie wziętych wczoraj
+            setNotTakenYesterdayMedicationsList(medications);
+            openNotTakenYesterdayModal(medications);
         } catch (error) {
             console.error("Błąd podczas pobierania leków pacjenta:", error);
         }
@@ -272,15 +276,14 @@ const MainView = () => {
 
 
 
-    const openNotTakenYesterdayModal = (notTakenYesterdayMedications) => {
+    const openNotTakenYesterdayModal = () => {
         setShowNotTakenYesterdayModal(true);
-        setNotTakenYesterdayMedicationsList(notTakenYesterdayMedications);
     };
 
     const closeNotTakenYesterdayModal = () => {
         setShowNotTakenYesterdayModal(false);
-        setNotTakenYesterdayMedicationsList([]); // Wyczyść listę leków po zamknięciu modala
     };
+
 
     const generateMedicationList = (medication) => {
         const medicationList = [];
@@ -313,62 +316,34 @@ const MainView = () => {
         );
     };
 
-
-    const handleCheckboxChangeMainView = async (medication, doseIndex) => {
+    const handleAddMedication = async () => {
         try {
             const currentDate = new Date();
-            const currentHour = currentDate.getHours();
+            const selectedDate = new Date(selectedDateTime);
 
-            // Odczytaj godzinę z `doseKey` bez zmiany
-            const selectedTime = medication.dawkowanie[doseIndex];
-
-            // Pobierz datę wczorajszą
-            const yesterday = new Date(currentDate);
-            yesterday.setDate(currentDate.getDate() - 1);
-            const dayYesterday = yesterday.getDate();
-            const monthYesterday = yesterday.getMonth() + 1;
-            const yearYesterday = yesterday.getFullYear();
-            const formattedDateYesterday = `${dayYesterday}/${monthYesterday}/${yearYesterday}`;
-
-            // Sprawdź, czy dokument istnieje w bazie danych
-            const existingDocQuery = query(
-                checkedMedicationsRef,
-                where("email", "==", email),
-                where("medicationName", "==", medication.nazwaProduktu),
-                where("checkedDate", "==", formattedDateYesterday),
-                where("checkedTime", "==", selectedTime)
-            );
-
-            const existingDocSnapshot = await getDocs(existingDocQuery);
-
-            if (existingDocSnapshot.size === 0) {
-                // Dodaj dokument, jeśli nie istnieje
-                await addDoc(checkedMedicationsRef, {
-                    email,
-                    medicationName: medication.nazwaProduktu,
-                    checkedDate: formattedDateYesterday,
-                    checkedTime: selectedTime,
-                });
-            } else {
-                // Usuń dokument, jeśli istnieje
-                existingDocSnapshot.forEach(async (doc) => {
-                    await deleteDoc(doc.ref);
-                });
+            // Sprawdź, czy wybrana data jest przyszła
+            if (selectedDate > currentDate) {
+                alert("Niepoprawna data. Wybierz datę starszą lub równą dzisiaj.");
+                return;
             }
 
-            // Zaktualizuj stan checkboxa lokalnie
-            const updatedIsChecked = { ...isCheckedMainView };
-            const doseKey = `dose-${medication.nazwaProduktu}-${medication.dawkowanie[doseIndex].replace(":", "_")}`;
-            updatedIsChecked[doseKey] = !updatedIsChecked[doseKey];
-            setIsCheckedMainView(updatedIsChecked);
+            const email = auth.currentUser.email;
+            const db = getFirestore(auth.app);
 
-            // Możesz dodać dodatkową logikę tutaj, jeśli to konieczne
+            // Dodaj informację do tabeli checkedMedications
+            await addDoc(checkedMedicationsRef, {
+                email,
+                medicationName: selectedMedication,
+                checkedDate: selectedDateTime.toLocaleDateString('en-GB'),
+                checkedTime: selectedDateTime.toLocaleTimeString('en-US', { hour12: false }),
+            });
 
+            // Zamknij modal po dodaniu
+            closeNotTakenYesterdayModal();
         } catch (error) {
-            console.error("Błąd podczas dodawania lub usuwania zaznaczonego leku:", error);
+            console.error("Błąd podczas dodawania leku:", error);
         }
     };
-
 
 
     return (
@@ -397,53 +372,49 @@ const MainView = () => {
                 </h1>
 
                 <div className="patient-medications">
-                    <h3>Leki pacjenta:</h3>
-                    <ul>
-                        {patientMedications.map((medication, index) => (
-                            <li key={`${index}`}>
-                                {generateMedicationList(medication)}
-                            </li>
-                        ))}
 
-                    </ul>
-
-
-
-                    <button className="button" onClick={getNotTakenYesterdayMedications}>Leki, których nie wzięto wczoraj</button>
+                    <button className="button" onClick={getNotTakenYesterdayMedications}>Zapomniałeś wprowadzić informacje o wzięciu leku?</button>
 
                     {showNotTakenYesterdayModal && (
                         <div className="modal">
-                            <button onClick={closeNotTakenYesterdayModal}>Zamknij</button>
-                            <h3>Leki, których nie wzięto wczoraj:</h3>
-                            <ul>
-                                {notTakenYesterdayMedicationsList.map((medication, index) => (
-                                    <li key={index}>
-                                        {medication.dawkowanie.map((dose, doseIndex) => {
-                                            const doseWithTime = `${medication.nazwaProduktu} - ${dose}`;
-                                            const doseKey = `dose-${medication.nazwaProduktu}-${dose.replace(":", "_")}`;
-                                            return (
-                                                <div key={`${index}-${doseIndex}`} className="checkbox-slider-container">
-                                                    <div className="checkbox-slider">
-                                                        <input
-                                                            type="checkbox"
-                                                            id={`checkbox-${index}-${doseIndex}`}
-                                                            checked={isCheckedMainView[doseKey] || false}
-                                                            onChange={() => handleCheckboxChangeMainView(medication, doseIndex)}
-                                                        />
-                                                        <label htmlFor={`checkbox-${index}-${doseIndex}`}>{doseWithTime}</label>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </li>
-                                ))}
-                            </ul>
+                            <button className="close-button" onClick={closeNotTakenYesterdayModal}>Zamknij</button>
+                            <h3>Wybierz lek, datę i godzinę:</h3>
+                            <div className="medication-picker-container">
+                                {/* Lista rozwijana z lekami użytkownika */}
+                                <select onChange={(event) => handleMedicationChange(event.target.value)}>
+                                    <option value="" disabled selected>Wybierz lek</option>
+                                    {patientMedications.map((medication, index) => (
+                                        <option key={index} value={medication.nazwaProduktu}>
+                                            {medication.nazwaProduktu}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            {/* Wybór daty i godziny */}
+                            <div className="date-time-picker-container">
+                                <DatePicker
+                                    selected={selectedDateTime}
+                                    onChange={(date) => setSelectedDateTime(date)}
+                                    showTimeSelect
+                                    dateFormat="Pp"
+                                />
+                            </div>
+                            {/* Dodaj przycisk "Dodaj" */}
+                            <button
+                                className="add-button"
+                                onClick={handleAddMedication}
+                                disabled={!selectedMedication || selectedDateTime >= new Date() || selectedDateTime.getDate() === new Date().getDate()}
+                            >
+                                Dodaj
+                            </button>
                         </div>
                     )}
 
 
-                </div>
 
+
+
+                </div>
 
                 <MyCalendar />
 
