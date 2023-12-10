@@ -212,7 +212,7 @@ const Doctors = () => {
                         </div>
 
 
-                        <div className="close-button">
+                        <div className="close-button-MOD">
                             <button onClick={handleCloseModal}>Zamknij</button>
                         </div>
                     </div>
