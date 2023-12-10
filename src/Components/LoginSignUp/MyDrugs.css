@@ -103,6 +103,27 @@ ul li {
     text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+.close-button-MOD button {
+    display: flex;
+    border: 1px solid #356F90;
+    outline: none;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 40px;
+    background-color: white;
+    color: #356F90;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    gap: 30px;
+    margin: 20px auto;
+    text-align: center; transition: border-color 0.3s, box-shadow 0.3s;
+}
+
 .close-button-MOD button:hover {
     border: 1px solid #AD4027;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
