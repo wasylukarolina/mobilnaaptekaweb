@@ -184,11 +184,11 @@ const MainView = () => {
                 // Display in green
                 return {
                     style: {
-                        backgroundColor: "green",
+                        backgroundColor: "#356F90",
                         borderRadius: "5px",
                         opacity: 0.8,
                         color: "white",
-                        border: "1px solid green",
+                        border: "1px solid #356F90",
                         display: "block",
                         cursor: "pointer",
                     },
@@ -345,18 +345,6 @@ const MainView = () => {
 
 
 
-    const isDoseTakenToday = (medicationName, dose) => {
-        const todayMidnight = new Date();
-        todayMidnight.setHours(0, 0, 0, 0);
-
-        return events.some(
-            (event) =>
-                event.title === medicationName &&
-                moment(event.start).format("HH:mm") === dose &&
-                moment(event.start).isAfter(todayMidnight)
-        );
-    };
-
     const handleAddMedication = async () => {
         try {
             const currentDate = new Date();
@@ -385,6 +373,32 @@ const MainView = () => {
             console.error("Błąd podczas dodawania leku:", error);
         }
     };
+
+    const getPatientMedications = async () => {
+        const email = auth.currentUser.email;
+        const medicationsRef = collection(db, "leki");
+        const medicationsQuery = query(medicationsRef, where("email", "==", email));
+
+        try {
+            const querySnapshot = await getDocs(medicationsQuery);
+            const medications = [];
+
+            querySnapshot.forEach((doc) => {
+                const medicationData = doc.data();
+                medications.push(medicationData);
+            });
+
+            // Aktualizacja listy leków pacjenta
+            setPatientMedications(medications);
+        } catch (error) {
+            console.error("Błąd podczas pobierania leków pacjenta:", error);
+        }
+    };
+
+// Wywołaj funkcję getPatientMedications w useEffect
+    useEffect(() => {
+        getPatientMedications();
+    }, [auth.currentUser.email]);
 
 
     return (
@@ -430,6 +444,7 @@ const MainView = () => {
                                         </option>
                                     ))}
                                 </select>
+
                             </div>
                             {/* Wybór daty i godziny */}
                             <div className="date-time-picker-container">
