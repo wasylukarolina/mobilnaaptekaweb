@@ -18,7 +18,19 @@ function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={!user ? <LoginSignup /> : <Navigate to="/mainview" />} />
+                <Route
+                    path="/"
+                    element={
+                        !user ? (
+                            <LoginSignup />
+                        ) : user.email.includes("@lekarz.pl") ? (
+                            <Navigate to="/mainviewdoc" />
+                        ) : (
+                            <Navigate to="/mainview" />
+                        )
+                    }
+                />
+
                 {user ? (
                     <>
                         <Route path="/mainview" element={<MainView />} />

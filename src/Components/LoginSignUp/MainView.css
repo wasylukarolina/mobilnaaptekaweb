@@ -279,6 +279,13 @@ img {
     border-color: #ccc; /* Kolor obramowania dla przycisku w stanie disabled */
 }
 
+.add-button:disabled:hover {
+    background-color: #ddd; /* Kolor tła dla przycisku w stanie disabled */
+    color: #aaa; /* Kolor tekstu dla przycisku w stanie disabled */
+    cursor: not-allowed; /* Zmiana kursora na "not-allowed" w stanie disabled */
+    border-color: #ccc; /* Kolor obramowania dla przycisku w stanie disabled */
+}
+
 .button {
     display: inline-block; /* Zmieniono display na inline-block */
     border: 1px solid #356F90;
