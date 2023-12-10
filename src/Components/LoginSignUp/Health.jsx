@@ -114,7 +114,6 @@ const Health = () => {
                     <Link to="/newdrug">DODAJ LEK</Link>
                     <Link to="/mydrugs">MOJE LEKI</Link>
                     <Link to="/health">STAN ZDROWIA</Link>
-                    <Link to="/updatehealth">PROPONUJ LEK</Link>
                     <Link to="/drugonce">WZIĄŁEM LEK</Link>
                     <Link to="/doctors">LEKARZE</Link>
                     <button className="logout-button" onClick={handleLogout}>Wyloguj</button>

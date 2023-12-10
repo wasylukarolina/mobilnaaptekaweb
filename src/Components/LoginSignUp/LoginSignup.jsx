@@ -10,6 +10,7 @@ import MainView from "./MainView";
 import { getDatabase, ref, set } from 'firebase/database';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 
 const LoginSignup = () => {
@@ -52,6 +53,7 @@ const LoginSignup = () => {
                 userId: userId,
                 nickname: nickname,
                 email: email,
+                // Dodaj inne dane, które chcesz przekazać
             };
 
             // Sprawdź, czy adres e-mail zawiera "@lekarz.pl"
@@ -63,14 +65,10 @@ const LoginSignup = () => {
             // Dodaj dokument do kolekcji "users"
             await addDoc(usersCollection, userData);
 
-
+            setAction("Logowanie"); // Przekierowanie na stronę logowania
             setEmail("");
             setPassword("");
             setNickname("");
-
-            navigate('/'); // Zakładam, że "/" to ścieżka do tego samego komponentu z widokiem logowania/rejestracji
-
-
         } catch (error) {
             console.error(error);
         }
@@ -87,19 +85,12 @@ const LoginSignup = () => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             console.log(userCredential);
             setIsLoggedIn(true);
-
-            // Sprawdź, czy adres e-mail zawiera "@lekarz.pl"
-            if (email.includes("@lekarz.pl")) {
-                navigate('/mainviewdoc');
-            } else {
-                navigate('/mainview');
-            }
+            navigate('/mainview');
         } catch (error) {
             console.error(error);
             alert("Nieudane logowanie. Sprawdź adres e-mail i hasło.");
         }
     };
-
 
 
     const handleResetPassword = () => {
@@ -112,6 +103,34 @@ const LoginSignup = () => {
                 console.error("Błąd podczas wysyłania e-maila z linkiem do resetowania hasła:", error);
             });
     };
+
+    const handleGoogleLogin = async () => {
+        try {
+            // Uzyskaj dostęp do obiektu autentykacji
+            const auth = getAuth();
+
+            // Utwórz dostawcę logowania do Google
+            const provider = new GoogleAuthProvider();
+
+            // Uruchom proces logowania z Google
+            const userCredential = await signInWithPopup(auth, provider);
+
+            // Zaloguj użytkownika
+            const user = userCredential.user;
+            setIsLoggedIn(true);
+
+            // Przejście do odpowiedniego widoku na podstawie adresu e-mail
+            if (user.email.includes("@lekarz.pl")) {
+                navigate('/mainviewdoc');
+            } else {
+                navigate('/mainview');
+            }
+        } catch (error) {
+            console.error("Błąd podczas logowania z Googlem:", error);
+            alert("Nieudane logowanie z Googlem.");
+        }
+    };
+
 
     return (
         <div className='container'>
@@ -149,7 +168,11 @@ const LoginSignup = () => {
                     {action === "Rejestracja" ? <div></div> : <div className="forgot-password" onClick={handleResetPassword}>
                         Zapomniałeś hasła? Wpisz swój mail w formularz i <span>Kliknij</span>
                     </div>}
-                    <button className="confirm-button" onClick={isLoggedIn ? null : (action === "Rejestracja" ? handleRegister : handleLogin)}>Potwierdź</button>
+
+                    <div className="buttons-container">
+                        <div className="submitG" onClick={() => handleGoogleLogin()}>G</div>
+                        <button className="confirm-button" onClick={isLoggedIn ? null : (action === "Rejestracja" ? handleRegister : handleLogin)}>Potwierdź</button>
+                    </div>
 
 
 

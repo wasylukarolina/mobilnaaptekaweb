@@ -133,3 +133,28 @@ body.login-signup {
     gap: 30px;
     margin: 20px auto;
 }
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Wyśrodkuj w osi pionowej */
+    gap: 40px;  /* Dodaj odstęp między przyciskami */
+}
+
+
+.submitG{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: -40px;
+    width: 50px; /* Przykładowa szerokość przycisków */
+    height: 30px; /* Przykładowa wysokość przycisków */
+    color: white;
+    background: #AD4027;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+

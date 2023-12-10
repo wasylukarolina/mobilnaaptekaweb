@@ -271,6 +271,10 @@ const NewDrug = () => {
             const existingDrugDoc = existingDrugSnapshot.docs[0];
             const existingDrugData = existingDrugDoc.data();
 
+            // Wyświetl alert informujący o aktualizacji danych
+            alert("Nie dodajesz nowego leku, aktualizujesz dane o istniejącym.");
+
+
             // Zaktualizuj datę ważności, liczbę tabletek i dawkowanie
             const newExpiryDate = existingDrugData.dataWaznosci < expiryDate ? expiryDate : existingDrugData.dataWaznosci;
             const newTabletsCount = existingDrugData.pojemnosc + parseInt(pojemnosc, 10);
@@ -426,7 +430,6 @@ const NewDrug = () => {
                     <Link to="/newdrug">DODAJ LEK</Link>
                     <Link to="/mydrugs">MOJE LEKI</Link>
                     <Link to="/health">STAN ZDROWIA</Link>
-                    <Link to="/updatehealth">PROPONUJ LEK</Link>
                     <Link to="/drugonce">WZIĄŁEM LEK</Link>
                     <Link to="/doctors">LEKARZE</Link>
                     <button className="logout-button" onClick={handleLogout}>Wyloguj</button>
