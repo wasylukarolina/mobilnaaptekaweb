@@ -132,8 +132,10 @@ const MyDrugs = () => {
             const currentDate = new Date();
             const currentHour = currentDate.getHours();
 
-            // Odczytaj godzinę z `doseKey`
-            const selectedTime = doseKey.split("-")[2].replace("_", ":");
+            const timeRegex = /(\d{2}_\d{2})/; // Załóżmy, że godzina jest w formacie DD_HH, gdzie DD to dzień, a HH to godzina
+            const match = doseKey.match(timeRegex);
+            const selectedTime = match ? match[1].replace("_", ":") : null;
+
             const actualTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
 
 

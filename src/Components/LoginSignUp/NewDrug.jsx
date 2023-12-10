@@ -230,9 +230,15 @@ const NewDrug = () => {
     };
 
     const handleDoseCountChange = (event) => {
-        setDoseCount(event.target.value);
+        const newDoseCount = parseInt(event.target.value, 10);
+        setDoseCount(newDoseCount);
+
         // Reset godzin dawek po zmianie liczby dawkowań
         setDoseTimes([]);
+
+        // Dodaj dynamiczną walidację dla maksymalnej liczby godzin między dawkami
+        const maxInterval = Math.floor(24 / newDoseCount); // Maksymalny interval w godzinach
+        setInterval(Math.min(interval, maxInterval));
     };
 
     const handleDoseTimeChange = (event, index) => {
@@ -406,7 +412,14 @@ const NewDrug = () => {
                         id="interval"
                         placeholder="Liczba godzin między dawkami"
                         value={interval}
-                        onChange={(e) => setInterval(parseInt(e.target.value, 10))}
+                        onChange={(e) => {
+                            const newValue = parseInt(e.target.value, 10);
+                            // Ograniczenie liczby godzin między dawkami w zależności od liczby dawek
+                            const maxInterval = doseCount > 1 ? 24 / doseCount : 24;
+                            if (!isNaN(newValue) && newValue >= 0 && newValue <= maxInterval) {
+                                setInterval(newValue);
+                            }
+                        }}
                     />
                 </>
             );
@@ -492,7 +505,7 @@ const NewDrug = () => {
                         <input
                             type="number"
                             value={pojemnosc}
-                            placeholder="Liczba tabletek"
+                            placeholder="Wpisz liczbę tabletek w opakowaniu"
                             onChange={(e) => {
                                 const newValue = parseInt(e.target.value, 10);
                                 if (!isNaN(newValue) && newValue >= 0 && newValue <= 120) {
@@ -532,14 +545,22 @@ const NewDrug = () => {
                             ) :
                                 <div className="dose-count-field">
                                     <button
-                                        onClick={() => setDoseCount((prevCount) => Math.max(prevCount - 1, 1))}
+                                        onClick={() => {
+                                            setDoseCount((prevCount) => Math.max(prevCount - 1, 1));
+                                            // Zeruj pole "Liczba godzin między dawkami"
+                                            setInterval(0);
+                                        }}
                                         disabled={doseCount <= 1}
                                     >
                                         -
                                     </button>
                                     <span>Dawki: {doseCount}</span>
                                     <button
-                                        onClick={() => setDoseCount((prevCount) => Math.min(prevCount + 1, 24))}
+                                        onClick={() => {
+                                            setDoseCount((prevCount) => Math.min(prevCount + 1, 24));
+                                            // Zeruj pole "Liczba godzin między dawkami"
+                                            setInterval(0);
+                                        }}
                                         disabled={doseCount >= 24}
                                     >
                                         +
