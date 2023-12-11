@@ -74,28 +74,34 @@ const MainViewDoc = () => {
 
                     medicationsSnapshot.forEach((doc) => {
                         const medicationData = doc.data();
-                        const {nazwaProduktu, dawkowanie} = medicationData;
+                        const { nazwaProduktu, dawkowanie } = medicationData;
 
-                        dawkowanie.forEach((dose) => {
-                            const [hours, minutes] = dose.split(":");
-                            const doseTime = new Date();
-                            doseTime.setHours(hours, minutes, 0, 0);
+                        const today = new Date();
+                        for (let day = 0; day > -30; day--) { // Loop for today and the previous five days
+                            const currentDate = new Date(today);
+                            currentDate.setDate(today.getDate() + day);
 
-                            const currentTime = new Date();
-                            if (currentTime > doseTime) {
-                                events.push({
-                                    title: `${nazwaProduktu} (notTakenLate)`,
-                                    start: doseTime,
-                                    end: new Date(doseTime.getTime() + 60 * 1000),
-                                });
-                            } else {
-                                events.push({
-                                    title: `${nazwaProduktu} (notTaken)`,
-                                    start: doseTime,
-                                    end: new Date(doseTime.getTime() + 60 * 1000),
-                                });
-                            }
-                        });
+                            dawkowanie.forEach((dose) => {
+                                const [hours, minutes] = dose.split(":");
+                                const doseTime = new Date(currentDate);
+                                doseTime.setHours(hours, minutes, 0, 0);
+
+                                const currentTime = new Date();
+                                if (currentTime > doseTime) {
+                                    events.push({
+                                        title: `${nazwaProduktu} (notTakenLate)`,
+                                        start: doseTime,
+                                        end: new Date(doseTime.getTime() + 60 * 1000),
+                                    });
+                                } else {
+                                    events.push({
+                                        title: `${nazwaProduktu} (notTaken)`,
+                                        start: doseTime,
+                                        end: new Date(doseTime.getTime() + 60 * 1000),
+                                    });
+                                }
+                            });
+                        }
                     });
 
                     checkedMedicationsSnapshot.forEach((doc) => {
