@@ -150,74 +150,77 @@ const LoginSignup = () => {
 
 
     return (
-        <div className='container'>
-            <div className="header">
-                <div className="text">{action}</div>
-                <div className="underline"></div>
-                <div className="submit-container">
-                    <div className={action === "Logowanie" ? "submit gray" : "submit"} onClick={() => {
-                        setAction("Rejestracja")
-                    }}>Rejestracja
-                    </div>
-                    <div className={action === "Rejestracja" ? "submit gray" : "submit"} onClick={() => {
-                        setAction("Logowanie")
-                    }}>Logowanie
+        <div className='background-container'>
+            <div className='container'>
+                <div className="header">
+                    <div className="text">{action}</div>
+                    <div className="underline"></div>
+                    <div className="submit-container">
+                        <div className={action === "Logowanie" ? "submit gray" : "submit"} onClick={() => {
+                            setAction("Rejestracja")
+                        }}>Rejestracja
+                        </div>
+                        <div className={action === "Rejestracja" ? "submit gray" : "submit"} onClick={() => {
+                            setAction("Logowanie")
+                        }}>Logowanie
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="inputs">
-                {action === "Logowanie" ? (
-                    // Sekcja dla Logowania
-                    <>
-                        <div className="input">
-                            <img src={email_icon} alt=""/>
-                            <input type="email" placeholder="Email" value={emailLog} onChange={(e) => setEmailLog(e.target.value)}/>
-                        </div>
-                        <div className="input">
-                            <img src={pass_icon} alt=""/>
-                            <input type="password" placeholder="Hasło" value={passwordLog} onChange={(e) => setPasswordLog(e.target.value)}/>
-                        </div>
-                    </>
-                ) : (
-                    // Sekcja dla Rejestracji
-                    <>
-                        <div className="input">
-                            <img src={person_icon} alt=""/>
-                            <input type="text" placeholder="Nick" value={nicknameReg} onChange={(e) => setNicknameReg(e.target.value)}/>
-                        </div>
-                        <div className="input">
-                            <img src={email_icon} alt=""/>
-                            <input type="email" placeholder="Email" value={emailReg} onChange={(e) => setEmailReg(e.target.value)}/>
-                        </div>
-                        <div className="input">
-                            <img src={pass_icon} alt=""/>
-                            <input type="password" placeholder="Hasło" value={passwordReg} onChange={(e) => setPasswordReg(e.target.value)}/>
-                        </div>
-                    </>
-                )}
-
-            </div>
-
-            <div>
-                {action === "Rejestracja" ? null : (
-                    <div className="forgot-password" onClick={handleResetPassword}>
-                        Zapomniałeś hasła? Wpisz swój mail w formularz i <span>Kliknij</span>
-                    </div>
-                )}
-
-                <div className="buttons-container">
-                    {action === "Rejestracja" ? (
-                        <button className="confirm-button" onClick={handleRegister}>Zarejestruj</button>
-                    ) : (
+                <div className="inputs">
+                    {action === "Logowanie" ? (
+                        // Sekcja dla Logowania
                         <>
-                            <div className="submitG" onClick={() => handleGoogleLogin()}>G</div>
-                            <button className="confirm-button" onClick={handleLogin}>Zaloguj</button>
+                            <div className="input">
+                                <img src={email_icon} alt=""/>
+                                <input type="email" placeholder="Email" value={emailLog} onChange={(e) => setEmailLog(e.target.value)}/>
+                            </div>
+                            <div className="input">
+                                <img src={pass_icon} alt=""/>
+                                <input type="password" placeholder="Hasło" value={passwordLog} onChange={(e) => setPasswordLog(e.target.value)}/>
+                            </div>
+                        </>
+                    ) : (
+                        // Sekcja dla Rejestracji
+                        <>
+                            <div className="input">
+                                <img src={person_icon} alt=""/>
+                                <input type="text" placeholder="Nick" value={nicknameReg} onChange={(e) => setNicknameReg(e.target.value)}/>
+                            </div>
+                            <div className="input">
+                                <img src={email_icon} alt=""/>
+                                <input type="email" placeholder="Email" value={emailReg} onChange={(e) => setEmailReg(e.target.value)}/>
+                            </div>
+                            <div className="input">
+                                <img src={pass_icon} alt=""/>
+                                <input type="password" placeholder="Hasło" value={passwordReg} onChange={(e) => setPasswordReg(e.target.value)}/>
+                            </div>
                         </>
                     )}
+
+                </div>
+
+                <div>
+                    {action === "Rejestracja" ? null : (
+                        <div className="forgot-password" onClick={handleResetPassword}>
+                            Zapomniałeś hasła? Wpisz swój mail w formularz i <span>Kliknij</span>
+                        </div>
+                    )}
+
+                    <div className="buttons-container">
+                        {action === "Rejestracja" ? (
+                            <button className="confirm-button" onClick={handleRegister}>Zarejestruj</button>
+                        ) : (
+                            <>
+                                <div className="submitG" onClick={() => handleGoogleLogin()}>G</div>
+                                <button className="confirm-button" onClick={handleLogin}>Zaloguj</button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
     );
+
 }
 export default LoginSignup;

@@ -1,6 +1,11 @@
 /* Ustaw tło strony na gradientowe w widoku LoginSignup */
-body.login-signup {
-    background: linear-gradient(#356F90, #AD4027); /* Gradientowe tło strony */
+
+.background-container {
+    background: linear-gradient(#356F90, #AD4027);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -17,6 +22,7 @@ body.login-signup {
     width: 600px;
     background: #fff;
     padding-bottom: 30px;
+
 }
 
 .header{
