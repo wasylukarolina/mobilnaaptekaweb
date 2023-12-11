@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs, addDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth } from "../../firebaseConfig";
 import { signOut } from 'firebase/auth';
 import { Link } from "react-router-dom";
@@ -369,6 +369,25 @@ const MainView = () => {
             const email = auth.currentUser.email;
             const db = getFirestore(auth.app);
 
+            // Znajdź lek w tabeli leki
+            const medicationsRef = collection(db, "leki");
+            const medicationsQuery = query(medicationsRef, where("email", "==", email), where("nazwaProduktu", "==", selectedMedication));
+            const medicationsSnapshot = await getDocs(medicationsQuery);
+
+            if (medicationsSnapshot.size > 0) {
+                const medicationDoc = medicationsSnapshot.docs[0];
+                const medicationData = medicationDoc.data();
+
+                // Odejmij ilośćTabletekJednorazowo od pojemnosc
+                const newPojemnosc = medicationData.pojemnosc - medicationData.iloscTabletekJednorazowo;
+
+                // Aktualizuj dokument w tabeli leki
+                await updateDoc(medicationDoc.ref, { pojemnosc: newPojemnosc });
+            } else {
+                console.error("Nie znaleziono leku w tabeli leki.");
+                return;
+            }
+
             // Dodaj informację do tabeli checkedMedications
             await addDoc(checkedMedicationsRef, {
                 email,
@@ -383,6 +402,7 @@ const MainView = () => {
             console.error("Błąd podczas dodawania leku:", error);
         }
     };
+
 
     const getPatientMedications = async () => {
         const email = auth.currentUser.email;
