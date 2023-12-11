@@ -464,13 +464,17 @@ const MainView = () => {
 
                     <div className="ending-medications">
                         <h3>Leki kończące się:</h3>
-                        <ul>
-                            {endingMedications.map((medication, index) => (
-                                <li key={index}>
-                                    {`${medication.nazwaProduktu} - ${medication.pojemnosc} dawek`}
-                                </li>
-                            ))}
-                        </ul>
+                        {endingMedications.length > 0 ? (
+                            // Renderuj listę leków kończących się
+                            <ul>
+                                {endingMedications.map((medication, index) => (
+                                    <li key={index}>{medication.nazwaProduktu}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            // Wyświetl napis "Brak"
+                            <p>Brak leków kończących się</p>
+                        )}
                     </div>
 
                     <button className="button" onClick={getNotTakenYesterdayMedications}>Zapomniałeś wprowadzić informacje o wzięciu leku?</button>
