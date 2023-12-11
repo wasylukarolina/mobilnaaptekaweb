@@ -32,6 +32,9 @@ const MainView = () => {
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showNotTakenYesterdayModal, setShowNotTakenYesterdayModal] = useState(false);
     const [selectedMedication, setSelectedMedication] = useState(""); // Dodaj stan dla wybranego leku
+    const [endingMedications, setEndingMedications] = useState([]);
+
+
 
 
 
@@ -397,10 +400,15 @@ const MainView = () => {
 
             // Aktualizacja listy leków pacjenta
             setPatientMedications(medications);
+
+            // Sprawdź leki kończące się i zaktualizuj stan
+            const endingMeds = medications.filter(med => med.pojemnosc < 10);
+            setEndingMedications(endingMeds);
         } catch (error) {
             console.error("Błąd podczas pobierania leków pacjenta:", error);
         }
     };
+
 
 // Wywołaj funkcję getPatientMedications w useEffect
     useEffect(() => {
@@ -433,6 +441,17 @@ const MainView = () => {
                 </h1>
 
                 <div className="patient-medications">
+
+                    <div className="ending-medications">
+                        <h3>Leki kończące się:</h3>
+                        <ul>
+                            {endingMedications.map((medication, index) => (
+                                <li key={index}>
+                                    {`${medication.nazwaProduktu} - ${medication.pojemnosc} dawek`}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <button className="button" onClick={getNotTakenYesterdayMedications}>Zapomniałeś wprowadzić informacje o wzięciu leku?</button>
 
