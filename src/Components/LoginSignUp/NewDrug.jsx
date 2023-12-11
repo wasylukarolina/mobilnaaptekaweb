@@ -257,6 +257,7 @@ const NewDrug = () => {
         const email = auth.currentUser.email;
         const db = getFirestore(auth.app);
         const lekiRef = collection(db, "leki");
+        const diseasesRef = collection(db, "diseases");
 
         if (
             !selectedProductNames[0] ||
@@ -267,6 +268,56 @@ const NewDrug = () => {
             alert("Uzupełnij wszystkie pola");
             return;
         }
+
+        // Sprawdź, czy istnieje pole "asthma" dla danego użytkownika w kolekcji diseases
+        const userDiseasesQuery = query(diseasesRef, where("email", "==", email));
+        const userDiseasesSnapshot = await getDocs(userDiseasesQuery);
+
+        if (userDiseasesSnapshot.size > 0) {
+            const userDiseasesData = userDiseasesSnapshot.docs[0].data();
+
+            // Sprawdź, czy pole "asthma" jest ustawione na true
+            if (userDiseasesData.asthma) {
+                // Jeśli tak, sprawdź, czy wybrany lek to "ibuprofen" lub "ibum"
+                if (selectedProductNames[0].toLowerCase().includes("ibuprofen") || selectedProductNames[0].toLowerCase().includes("ibum")) {
+                    // Wyświetl alert o kolizji z lekiem a astmą
+                    alert("Lek koliduje ze stanem zdrowia (astmą).");
+                    return;
+                }
+            }
+
+            // Sprawdź, czy pole "cukrzyca" jest ustawione na true
+            if (userDiseasesData.cukrzyca) {
+                // Jeśli tak, sprawdź, czy wybrany lek to "strepsils" i czy nie zawiera "bez cukru" w nazwie
+                const lekNameLowerCase = selectedProductNames[0].toLowerCase();
+                if (lekNameLowerCase.includes("strepsils") && !lekNameLowerCase.includes("bez cukru")) {
+                    // Wyświetl alert o kolizji z lekiem a cukrzycą
+                    alert("Lek koliduje ze stanem zdrowia (cukrzycą).");
+                    return;
+                }
+            }
+
+
+            // Sprawdź, czy pole "ciąża" jest ustawione na true
+            if (userDiseasesData.ciaza) {
+                // Wyświetl alert o kolizji z lekiem a ciążą
+                alert("Lek koliduje ze stanem zdrowia (ciążą).");
+                return;
+            }
+
+            // Sprawdź, czy pole "choroby serca" jest ustawione na true
+            if (userDiseasesData["chorobySerca"]) {
+                // Jeśli tak, sprawdź, czy wybrany lek to "ibuprofen" lub "ibum"
+                if (selectedProductNames[0].toLowerCase().includes("ibuprofen") || selectedProductNames[0].toLowerCase().includes("ibum")) {
+                    // Wyświetl alert o kolizji z lekiem a chorobą serca
+                    alert("Lek koliduje ze stanem zdrowia (chorobą serca).");
+                    return;
+                }
+            }
+        }
+
+
+
 
         // Sprawdź, czy wybrany lek istnieje już w bazie dla tego użytkownika
         const existingDrugQuery = query(lekiRef, where("email", "==", email), where("nazwaProduktu", "==", selectedProductNames[0]));
@@ -592,21 +643,21 @@ const NewDrug = () => {
                     )}
 
                     {isHoveredExpiryDate && (
-                        <div className="hover-text2">Zaznacz datę ważności opakowania</div>
+                        <div className="hover-text">Zaznacz datę ważności opakowania</div>
                     )}
 
                     {isHoveredTabletsCount && (
-                        <div className="hover-text3">Wpisz liczbę tabletek znajdujących się w opakowaniu i zaznacz ile tabletek bierzesz jednorazowo</div>
+                        <div className="hover-text">Wpisz liczbę tabletek znajdujących się w opakowaniu i zaznacz ile tabletek bierzesz jednorazowo</div>
 
                     )}
 
                     {isHoveredDoseCount && (
-                        <div className="hover-text4">Jeśli bierzesz tabletki w równych odstępach czasu pozostaw pole odznaczone i wybierz liczbę dawek. Jeśli między dawkami są różne odstępy godzin zaznacz checkbox. </div>
+                        <div className="hover-text">Jeśli bierzesz tabletki w równych odstępach czasu pozostaw pole odznaczone i wybierz liczbę dawek. Jeśli między dawkami są różne odstępy godzin zaznacz checkbox. </div>
 
                     )}
 
                     {isHoveredDoseTimes && (
-                        <div className="hover-text5">Pole z zegarem służy do wpisywania godziny. Obok wpisz liczbę godzin między dawkami. Plus służy do dodawania kolejnych godzin dawek. </div>
+                        <div className="hover-text">Pole z zegarem służy do wpisywania godziny. Obok wpisz liczbę godzin między dawkami. Plus służy do dodawania kolejnych godzin dawek. </div>
 
                     )}
                 </div>

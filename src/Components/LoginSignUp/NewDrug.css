@@ -16,17 +16,17 @@
 }
 
 .hover-text-container {
-    margin: 0 auto; /* Ustaw marginesy poziome na auto, aby umieścić w środku */
+    margin: 0 auto;
     flex-direction: column;
-    width: 20vw; /* Szerokość 20% szerokości widoku */
+    width: 20vw;
     position: absolute;
     top: 30%;
-    right: 10vw; /* 10vw od prawej - lekkie przesunięcie w prawo */
-    height: 20vh; /* Wysokość 70% wysokości widoku, zgodnie z drug-entry-field */
+    right: 10vw;
+    height: 20vh;
     display: flex;
-    align-items: center; /* Wyśrodkuj zawartość w pionie na środku */
-    background-color: rgba(245, 245, 245, 0.5); /* Szare tło z 50% przezroczystości */
-    border-radius: 10px; /* Zastosuj zaokrąglenie krawędzi */
+    align-items: center;
+    background-color: rgba(245, 245, 245, 0.5);
+    border-radius: 10px;
     border: 1px solid #AD4027;
     justify-content: center;
     background-clip: padding-box;
@@ -34,43 +34,27 @@
 
 /* Dodaj styl dla h2 */
 .hover-text-container h2 {
-    margin-bottom: auto; /* Ustaw margines na auto, aby przesunąć tekst na górę */
+    margin-bottom: auto;
 }
-
 
 .hover-text {
     background-color: transparent;
-    padding: 5px;
-    border: 1px solid #ccc;
+    padding: 10px;
+    border: none;
     border-radius: 5px;
     position: absolute;
     top: 50%;
     left: 50%;
+    width: 90%;
     transform: translate(-50%, -50%);
+    font-size: 20px;
+    color: #356F90;
+    text-align: center; /* Wyśrodkuj tekst w poziomie */
 }
 
 
-.hover-text2 {
-    background-color: transparent;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
 
-.hover-text3 {
-    background-color: transparent;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
+
 
 .hover-text-container:hover .hover-text {
     display: inline-block;

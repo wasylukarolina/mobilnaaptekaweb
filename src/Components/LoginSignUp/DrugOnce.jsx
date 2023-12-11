@@ -210,7 +210,7 @@ const DrugOnce = () => {
 
             <div className="content with-background">
                 <h1> </h1>
-                <div className="drug-field2">
+                <div className="drug-entry-field">
                     <h2>Wyszukaj lub wybierz lek:</h2>
                     <div className="search-input-container">
                         <input
@@ -267,6 +267,13 @@ const DrugOnce = () => {
                         Zatwierdź
                     </button>
 
+
+                </div>
+
+                <div className="hover-text-container">
+                    <h2>Instrukcja</h2>
+
+                    <div className="hover-text">Jeśli wziąłeś lek spoza swojej apteczki tutaj wpisz jego nazwę i wybierz go z listy.<br />Jeśli wziąłeś go w tym momencie pozostaw checkbox odznaczony, w celu zmiany godziny zaznacz go i wybierz z pola.</div>
 
                 </div>
             </div>
